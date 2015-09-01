@@ -11,15 +11,10 @@
     <name>aws-resource-monitor</name>
 
     <repositories>
-        <!--<repository>
+        <repository>
             <id>mvnrepository</id>
             <name>MVN Repository</name>
             <url>http://mvnrepository.com/artifact</url>
-        </repository>-->
-        <repository>
-            <id>fourvartifact</id>
-            <name>FourV Artifact</name>
-            <url>http://artifact.fourvinternal.com/nexus</url>
         </repository>
     </repositories>
 
@@ -27,8 +22,12 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
-            <!--<version>1.10.14</version>-->
             <version>1.9.8</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
         </dependency>
     </dependencies>
 

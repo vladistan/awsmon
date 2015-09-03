@@ -79,7 +79,7 @@ public class AWSResourceMonitor {
                     }
                 }
                 if (foundName) {
-                    if (instance.getState().equals("running")) {
+                    if (instance.getState().getName().equals("running")) {
                         Date launchTime = instance.getLaunchTime();
                         System.out.println("*** Running Instances: " + name + " --- " + instance.getInstanceId() +
                                 " - " + instance.getState().toString() +

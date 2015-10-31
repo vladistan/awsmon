@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<testsuites>
+    <testsuite name="AwsResources" tests="8" failures="7">
+        <testcase name="MissingTag" classname="GreySparkCyberDev-gmartinDemo Master">
+            <failure message="Does not have required tag 'Lifecycle'"/>
+        </testcase>
+        <testcase name="RunningTime" classname="GreySparkCyberDev-gmartinDemoServices SSO Server"/>
+        <testcase name="RunningTime" classname="GreySparkCyberDev-SweeneyDev1Services SSO Server">
+            <failure message="has been running longer than the allowable time."/>
+        </testcase>
+        <testcase name="MissingTag" classname="GreySparkCyberDev-SweeneyDev1Services SSO Server">
+            <failure message="Does not have required tag 'Lifecycle'"/>
+        </testcase>
+        <testcase name="MissingTag" classname="GreySparkCyberDev-SweeneyDev1Services SSO Server">
+            <failure message="Does not have required tag 'Project'"/>
+        </testcase>
+        <testcase name="MissingTag" classname="GreySparkCyberDev-SweeneyDev1Services SSO Server">
+            <failure message="Does not have required tag 'Service'"/>
+        </testcase>
+        <testcase name="MissingTag" classname="GreySparkCyberDev-SweeneyDev1Services SSO Server">
+            <failure message="Does not have required tag 'Owner'"/>
+        </testcase>
+        <testcase name="MissingTag" classname="GreySparkCyberDev-SweeneyDev1Services SSO Server">
+            <failure message="Does not have required tag 'ChargeLine'"/>
+        </testcase>
+    </testsuite>
+</testsuites>

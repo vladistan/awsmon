@@ -1,0 +1,12 @@
+^/[\*]+$
+^ \*$
+^ \* Project: (PI000.007AY.14 CIP Hackability Index|GreySpark Core)$
+^ \* \(c\) 201[3-9]{1} (SRC, Inc|FourV Systems, LLC).$
+^ \* Unpublished-rights reserved under the copyrights laws of the United States.$
+^ \* All use of this commercial software is subject to the terms and conditions of$
+^ \* the manufacturer's End User License Agreement.$
+^ \* ?$
+^ \* Manufacturer is:$
+^ \* (FourV Systems, LLC, 8 Market Place,  Baltimore, MD 21202.)|(SRC, Inc 7502 Round Pond Rd. North Syracuse NY 13212.)$
+^ \* ?$
+^ [\*]+\/$

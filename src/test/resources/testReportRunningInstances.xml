@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<testsuites>
+    <testsuite name="AwsResources" tests="4" failures="2">
+        <testcase name="RunningTime" classname="GreySparkCyberDev-gmartinDemo Master"/>
+        <testcase name="RunningTime" classname="GreySparkCyberDev-gmartinDemoServices SSO Server"/>
+        <testcase name="RunningTime" classname="GreySparkCyberDev-SweeneyDev1Services SSO Server">
+            <failure message="has been running longer than the allowable time."/>
+        </testcase>
+        <testcase name="RunningTime" classname="GreySparkCyberDev-SweeneyDev1Services WebApp">
+            <failure message="has been running longer than the allowable time."/>
+        </testcase>
+    </testsuite>
+</testsuites>

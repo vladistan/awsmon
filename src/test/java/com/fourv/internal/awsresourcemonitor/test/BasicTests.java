@@ -61,8 +61,7 @@ public class BasicTests {
     DescribeInstancesResult result = mock(DescribeInstancesResult.class);
 
     List<Reservation> reservations = new ArrayList<Reservation>();
-    when(result.getReservations()).thenReturn(new ArrayList<Reservation>())
-                                  .thenReturn(reservations)
+    when(result.getReservations()).thenReturn(reservations)
                                   .thenReturn(new ArrayList<Reservation>());
     when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(result);
 
@@ -115,8 +114,8 @@ public class BasicTests {
 
     mon.run(ec2);
 
-    verify(ec2, times(11)).setRegion((Region) anyObject());
-    verify(ec2, times(11)).describeInstances((DescribeInstancesRequest) anyObject());
+    verify(ec2, times(9)).setRegion((Region) anyObject());
+    verify(ec2, times(9)).describeInstances((DescribeInstancesRequest) anyObject());
     verifyNoMoreInteractions(ec2);
 
     File basicSamplereport = TestUtil.getTestResource("testReportRunningInstances.xml");
@@ -136,7 +135,6 @@ public class BasicTests {
 
     List<Reservation> reservations = new ArrayList<Reservation>();
     when(result.getReservations())
-      .thenReturn(new ArrayList<Reservation>())
       .thenReturn(reservations)
       .thenReturn(new ArrayList<Reservation>());
     when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(result);
@@ -186,7 +184,6 @@ public class BasicTests {
 
     List<Reservation> reservations = new ArrayList<Reservation>();
     when(result.getReservations())
-      .thenReturn(new ArrayList<Reservation>())
       .thenReturn(reservations)
       .thenReturn(new ArrayList<Reservation>());
     when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(result);
@@ -240,10 +237,10 @@ public class BasicTests {
     List<InstanceData> list = mon.getAllInstances(ec2);
 
     InstanceData instData = list.get(0);
-    assertThat(instData.getRegion()).isEqualTo("us-gov-west-1");
+    assertThat(instData.getRegion()).isEqualTo("us-east-1");
 
     instData = list.get(1);
-    assertThat(instData.getRegion()).isEqualTo("us-east-1");
+    assertThat(instData.getRegion()).isEqualTo("us-west-1");
 
   }
 
@@ -262,7 +259,6 @@ public class BasicTests {
 
     List<Reservation> reservations = new ArrayList<Reservation>();
     when(result.getReservations())
-      .thenReturn(new ArrayList<Reservation>())
       .thenReturn(reservations)
       .thenReturn(new ArrayList<Reservation>());
     when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(result);
@@ -315,7 +311,6 @@ public class BasicTests {
 
     List<Reservation> reservations = new ArrayList<Reservation>();
     when(result.getReservations())
-         .thenReturn(new ArrayList<Reservation>())
          .thenReturn(reservations)
          .thenReturn(new ArrayList<Reservation>());
     when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(result);

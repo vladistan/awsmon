@@ -53,6 +53,7 @@ public class InstanceData {
   final private Set<String> AllowedServiceValues = new HashSet<String>();
   final private Set<String> AllowedOwnerValues = new HashSet<String>();
   final private Set<String> AllowChargeLineValues = new HashSet<String>();
+  private String region;
 
   /**
    * Initialize proxy object
@@ -187,5 +188,22 @@ public class InstanceData {
       return null;
     }
     return (Date) launchTime.clone();
+  }
+
+  /**
+   * Getter for region
+   * @return region
+   */
+  public String getRegion() {
+    return region;
+  }
+
+  /**
+   * Setter for region
+   * @param region region
+   */
+  public void setRegion(String region)
+  {
+    this.region = region;
   }
 }

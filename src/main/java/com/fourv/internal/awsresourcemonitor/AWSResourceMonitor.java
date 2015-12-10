@@ -30,23 +30,21 @@ import com.jaxb.junit.ObjectFactory;
 import com.jaxb.junit.Testcase;
 import com.jaxb.junit.Testsuite;
 import com.jaxb.junit.Testsuites;
-
 import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.xml.sax.SAXException;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
 
 /**
@@ -255,6 +253,12 @@ public class AWSResourceMonitor {
           failure |= true;
         }
 
+        if(!metaData.getRegion().equals("us-east-1")) {
+            String errMsg = "Found instance outside of US_EAST1 region";
+            addResult(getFailingTestCase(name, "WrongRegion", errMsg));
+            failure |= true;
+        }
+
       }
 
       if (!failure) {
@@ -265,26 +269,46 @@ public class AWSResourceMonitor {
   }
 
   /**
-   * Get all instances in US_EAST_1
+   * Get all instances in US_EAST_1 and US_WEST_1
    * @param ec2 ec2 API object
    * @return list of instance proxy objects
    */
   public List<InstanceData> getAllInstances(AmazonEC2 ec2) {
     // Find all running EC2 instances that match the regular expression
-    ec2.setRegion(Region.getRegion(Regions.US_EAST_1));
+    List<InstanceData> instList = new ArrayList<InstanceData>(1000);
+
+
+    for (Regions reg : Regions.values()) {
+      collectRegionInstances(ec2, instList, reg);
+    }
+
+
+
+    return instList;
+  }
+
+  /**
+   * Get all instances in the region
+   * @param ec2 ec2 object
+   * @param instList instance list
+   * @param region region
+   */
+  public void collectRegionInstances(AmazonEC2 ec2, List<InstanceData> instList, Regions region) {
+    ec2.setRegion(Region.getRegion(region));
     // Collect a list of running instances
     DescribeInstancesRequest request = new DescribeInstancesRequest();
     DescribeInstancesResult result = ec2.describeInstances(request);
     List<Reservation> reservations = result.getReservations();
-    List<InstanceData> instList = new ArrayList<InstanceData>(1000);
+
 
     // loop through each running resource
     for (Reservation reservation : reservations) {
       for (Instance instance : reservation.getInstances()) {
-        instList.add(new InstanceData(instance));
+        InstanceData iData = new InstanceData(instance);
+        iData.setRegion(region.getName());
+        instList.add(iData);
       }
     }
-    return instList;
   }
 
 

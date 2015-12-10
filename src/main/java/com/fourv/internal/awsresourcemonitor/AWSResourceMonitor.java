@@ -277,8 +277,12 @@ public class AWSResourceMonitor {
     // Find all running EC2 instances that match the regular expression
     List<InstanceData> instList = new ArrayList<InstanceData>(1000);
 
-    collectRegionInstances(ec2, instList, Regions.US_EAST_1);
-    collectRegionInstances(ec2, instList, Regions.US_WEST_1);
+
+    for (Regions reg : Regions.values()) {
+      collectRegionInstances(ec2, instList, reg);
+    }
+
+
 
     return instList;
   }

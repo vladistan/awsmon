@@ -21,7 +21,6 @@ import com.amazonaws.services.ec2.model.Reservation;
 import com.fourv.internal.awsresourcemonitor.AWSResourceMonitor;
 import com.fourv.internal.awsresourcemonitor.InstanceData;
 import com.jaxb.junit.Testcase;
-
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.junit.Rule;
@@ -29,6 +28,9 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.xml.sax.SAXException;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -36,18 +38,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.notNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class BasicTests {
 
@@ -67,7 +61,9 @@ public class BasicTests {
     DescribeInstancesResult result = mock(DescribeInstancesResult.class);
 
     List<Reservation> reservations = new ArrayList<Reservation>();
-    when(result.getReservations()).thenReturn(reservations).thenReturn(new ArrayList<Reservation>());
+    when(result.getReservations()).thenReturn(new ArrayList<Reservation>())
+                                  .thenReturn(reservations)
+                                  .thenReturn(new ArrayList<Reservation>());
     when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(result);
 
     Reservation res1 = mock(Reservation.class);
@@ -119,8 +115,8 @@ public class BasicTests {
 
     mon.run(ec2);
 
-    verify(ec2, times(2)).setRegion((Region) anyObject());
-    verify(ec2, times(2)).describeInstances((DescribeInstancesRequest) anyObject());
+    verify(ec2, times(11)).setRegion((Region) anyObject());
+    verify(ec2, times(11)).describeInstances((DescribeInstancesRequest) anyObject());
     verifyNoMoreInteractions(ec2);
 
     File basicSamplereport = TestUtil.getTestResource("testReportRunningInstances.xml");
@@ -139,7 +135,10 @@ public class BasicTests {
     DescribeInstancesResult result = mock(DescribeInstancesResult.class);
 
     List<Reservation> reservations = new ArrayList<Reservation>();
-    when(result.getReservations()).thenReturn(reservations).thenReturn(new ArrayList<Reservation>());
+    when(result.getReservations())
+      .thenReturn(new ArrayList<Reservation>())
+      .thenReturn(reservations)
+      .thenReturn(new ArrayList<Reservation>());
     when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(result);
 
     Reservation res1 = mock(Reservation.class);
@@ -186,7 +185,10 @@ public class BasicTests {
     DescribeInstancesResult result = mock(DescribeInstancesResult.class);
 
     List<Reservation> reservations = new ArrayList<Reservation>();
-    when(result.getReservations()).thenReturn(reservations).thenReturn(new ArrayList<Reservation>());
+    when(result.getReservations())
+      .thenReturn(new ArrayList<Reservation>())
+      .thenReturn(reservations)
+      .thenReturn(new ArrayList<Reservation>());
     when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(result);
 
     Reservation res1 = mock(Reservation.class);
@@ -238,10 +240,10 @@ public class BasicTests {
     List<InstanceData> list = mon.getAllInstances(ec2);
 
     InstanceData instData = list.get(0);
-    assertThat(instData.getRegion()).isEqualTo("us-east-1");
+    assertThat(instData.getRegion()).isEqualTo("us-gov-west-1");
 
     instData = list.get(1);
-    assertThat(instData.getRegion()).isEqualTo("us-west-1");
+    assertThat(instData.getRegion()).isEqualTo("us-east-1");
 
   }
 
@@ -259,7 +261,10 @@ public class BasicTests {
     DescribeInstancesResult result = mock(DescribeInstancesResult.class);
 
     List<Reservation> reservations = new ArrayList<Reservation>();
-    when(result.getReservations()).thenReturn(reservations).thenReturn(new ArrayList<Reservation>());
+    when(result.getReservations())
+      .thenReturn(new ArrayList<Reservation>())
+      .thenReturn(reservations)
+      .thenReturn(new ArrayList<Reservation>());
     when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(result);
 
     Reservation res1 = mock(Reservation.class);
@@ -309,7 +314,10 @@ public class BasicTests {
     DescribeInstancesResult result = mock(DescribeInstancesResult.class);
 
     List<Reservation> reservations = new ArrayList<Reservation>();
-    when(result.getReservations()).thenReturn(reservations).thenReturn(new ArrayList<Reservation>());
+    when(result.getReservations())
+         .thenReturn(new ArrayList<Reservation>())
+         .thenReturn(reservations)
+         .thenReturn(new ArrayList<Reservation>());
     when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(result);
 
     Reservation res1 = mock(Reservation.class);

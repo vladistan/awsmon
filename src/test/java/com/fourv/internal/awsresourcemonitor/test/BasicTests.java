@@ -12,12 +12,14 @@
  */
 package com.fourv.internal.awsresourcemonitor.test;
 
+import com.amazonaws.regions.Region;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.fourv.internal.awsresourcemonitor.AWSResourceMonitor;
+import com.fourv.internal.awsresourcemonitor.InstanceData;
 import com.jaxb.junit.Testcase;
 
 import org.joda.time.DateTime;
@@ -39,8 +41,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.notNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class BasicTests {
@@ -61,7 +67,7 @@ public class BasicTests {
     DescribeInstancesResult result = mock(DescribeInstancesResult.class);
 
     List<Reservation> reservations = new ArrayList<Reservation>();
-    when(result.getReservations()).thenReturn(reservations);
+    when(result.getReservations()).thenReturn(reservations).thenReturn(new ArrayList<Reservation>());
     when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(result);
 
     Reservation res1 = mock(Reservation.class);
@@ -113,6 +119,10 @@ public class BasicTests {
 
     mon.run(ec2);
 
+    verify(ec2, times(2)).setRegion((Region) anyObject());
+    verify(ec2, times(2)).describeInstances((DescribeInstancesRequest) anyObject());
+    verifyNoMoreInteractions(ec2);
+
     File basicSamplereport = TestUtil.getTestResource("testReportRunningInstances.xml");
     assertThat(mon.getJunitReportFile()).hasSameContentAs(basicSamplereport);
   }
@@ -129,7 +139,7 @@ public class BasicTests {
     DescribeInstancesResult result = mock(DescribeInstancesResult.class);
 
     List<Reservation> reservations = new ArrayList<Reservation>();
-    when(result.getReservations()).thenReturn(reservations);
+    when(result.getReservations()).thenReturn(reservations).thenReturn(new ArrayList<Reservation>());
     when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(result);
 
     Reservation res1 = mock(Reservation.class);
@@ -165,6 +175,79 @@ public class BasicTests {
   }
 
   @Test
+  public void instanceDataMustHaveRegionFieldFilled() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException {
+
+    AWSResourceMonitor mon = new AWSResourceMonitor();
+    mon.setNamePattern("G.*");
+    mon.setMaxAllowedHoursToRun("2");
+
+    AmazonEC2 ec2 = mock(AmazonEC2.class);
+
+    DescribeInstancesResult result = mock(DescribeInstancesResult.class);
+
+    List<Reservation> reservations = new ArrayList<Reservation>();
+    when(result.getReservations()).thenReturn(reservations).thenReturn(new ArrayList<Reservation>());
+    when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(result);
+
+    Reservation res1 = mock(Reservation.class);
+    reservations.add(res1);
+
+    List<Instance> list1 = new ArrayList<Instance>();
+    when(res1.getInstances()).thenReturn(list1);
+
+    Instance inst = TestUtil.getMockInstance("running", "GreySparkCyberDev-gmartinDemo Master");
+    list1.add(inst);
+
+
+    List<InstanceData> list = mon.getAllInstances(ec2);
+
+    InstanceData instData = list.get(0);
+
+    assertThat(instData.getRegion()).isEqualTo("us-east-1");
+
+  }
+
+  @Test
+  public void instanceDataMustHaveRegionFieldFilledWhenMultipleRegionsArePresent() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException {
+
+    AWSResourceMonitor mon = new AWSResourceMonitor();
+    mon.setNamePattern("G.*");
+    mon.setMaxAllowedHoursToRun("2");
+
+    AmazonEC2 ec2 = mock(AmazonEC2.class);
+
+    DescribeInstancesResult east_result = mock(DescribeInstancesResult.class);
+
+    List<Reservation> east_reservations = new ArrayList<Reservation>();
+
+    when(east_result.getReservations()).thenReturn(east_reservations);
+
+
+    when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(east_result);
+
+    Reservation res1 = mock(Reservation.class);
+    east_reservations.add(res1);
+
+    List<Instance> list1 = new ArrayList<Instance>();
+    when(res1.getInstances()).thenReturn(list1);
+
+    Instance inst = TestUtil.getMockInstance("running", "GreySparkCyberDev-gmartinDemo Master");
+    list1.add(inst);
+
+
+    List<InstanceData> list = mon.getAllInstances(ec2);
+
+    InstanceData instData = list.get(0);
+    assertThat(instData.getRegion()).isEqualTo("us-east-1");
+
+    instData = list.get(1);
+    assertThat(instData.getRegion()).isEqualTo("us-west-1");
+
+  }
+
+
+
+  @Test
   public void shouldNotifyAboutIncorectValueForLifecycleTag() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException, URISyntaxException {
     AWSResourceMonitor mon = new AWSResourceMonitor();
 
@@ -176,7 +259,7 @@ public class BasicTests {
     DescribeInstancesResult result = mock(DescribeInstancesResult.class);
 
     List<Reservation> reservations = new ArrayList<Reservation>();
-    when(result.getReservations()).thenReturn(reservations);
+    when(result.getReservations()).thenReturn(reservations).thenReturn(new ArrayList<Reservation>());
     when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(result);
 
     Reservation res1 = mock(Reservation.class);
@@ -226,7 +309,7 @@ public class BasicTests {
     DescribeInstancesResult result = mock(DescribeInstancesResult.class);
 
     List<Reservation> reservations = new ArrayList<Reservation>();
-    when(result.getReservations()).thenReturn(reservations);
+    when(result.getReservations()).thenReturn(reservations).thenReturn(new ArrayList<Reservation>());
     when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(result);
 
     Reservation res1 = mock(Reservation.class);
@@ -302,6 +385,42 @@ public class BasicTests {
     boolean rv = mon.beenRunningTooLong(launchTime, new Date());
 
     assertThat(rv).isTrue();
+  }
+
+  @Test
+  public void shouldFlagInstancesOutsideOfUsEast1Region() {
+    AWSResourceMonitor mon = new AWSResourceMonitor();
+
+
+    List<InstanceData> instList = new ArrayList<InstanceData>();
+
+    mon.assessInstances(instList);
+
+    Instance inst = TestUtil.getMockInstance("running", "GreySparkCyberDev-SweeneyDev1Services SSO Server", 4);
+    TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
+    TestUtil.addInstanceTag(inst, "Service", "VPN");
+    TestUtil.addInstanceTag(inst, "Project", "GreySpark (v1.0)");
+    TestUtil.addInstanceTag(inst, "Lifecycle", "Permanent");
+    TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
+    TestUtil.addInstanceTag(inst, "Owner", "jcamp@fourv.com");
+
+
+    InstanceData instData = new InstanceData(inst);
+    instData.setRegion("us-west-9");
+    instList.add(instData);
+
+    mon.assessInstances(instList);
+    List<Testcase> res = mon.getTestResults();
+
+    assertThat(res).hasSize(1);
+
+    Testcase case1 = res.get(0);
+
+    assertThat(case1.getFailure()).hasSize(1);
+
+    assertThat(case1.getFailure().get(0).getMessage()).isEqualTo("Found instance outside of US_EAST1 region");
+
+
   }
 
 

@@ -279,6 +279,9 @@ public class AWSResourceMonitor {
 
 
     for (Regions reg : Regions.values()) {
+      String regName = reg.getName();
+      if ( regName.equals("us-gov-west-1")) continue;
+      if ( regName.equals("cn-north-1")) continue;
       collectRegionInstances(ec2, instList, reg);
     }
 

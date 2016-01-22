@@ -150,6 +150,18 @@ public class TestInstanceData {
 
   }
 
+  @Test
+  public void ShouldSetAcceptRomanAsOwner() {
+
+    Instance inst = TestUtil.getMockInstance("running", "My EC2 Instance");
+
+    TestUtil.addInstanceTag(inst, "Owner", "roman_glova@epam.com");
+    InstanceData iData = new InstanceData(inst);
+
+    assertThat(iData.owner).isEqualTo("roman_glova@epam.com");
+
+  }
+
 
   @Test
   public void ShouldRecordTagValueErrorWhenOwnerIsNotAllowedValue() {

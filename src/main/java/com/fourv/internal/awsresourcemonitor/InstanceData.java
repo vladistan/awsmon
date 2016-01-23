@@ -83,6 +83,7 @@ public class InstanceData {
     AllowedOwnerValues.add("vkorolev@fourv.com");
     AllowedOwnerValues.add("jcamp@fourv.com");
     AllowedOwnerValues.add("rsamson@fourv.com");
+    AllowedOwnerValues.add("roman_glova@epam.com");
 
     AllowChargeLineValues.add("InternalDevops");
     AllowChargeLineValues.add("InternalDev");

@@ -89,6 +89,7 @@ public class InstanceData {
     AllowChargeLineValues.add("InternalDev");
     AllowChargeLineValues.add("InternalQA");
     AllowChargeLineValues.add("SalesOps");
+    AllowChargeLineValues.add("AP");
 
     final String stateName = inst.getState().getName();
     running = "running".equals(stateName);

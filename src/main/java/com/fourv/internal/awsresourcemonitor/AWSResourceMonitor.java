@@ -60,6 +60,12 @@ public class AWSResourceMonitor {
   @Parameter(names = "-help", description = "Print help and exit", help = true)
   private boolean help;
 
+  @Parameter(names = "-version", description = "Print version and exit")
+  private boolean version;
+
+  @Parameter(names = "-buildInfo", description = "Print build information")
+  private boolean buildInfo;
+
   @Parameter(names = "-namePattern", description = "Name pattern to filter")
   private String namePattern = ".*";
 
@@ -97,12 +103,23 @@ public class AWSResourceMonitor {
         jc.usage();
         return;
       }
-    } catch ( ParameterException exc) {
 
-        //CHECKSTYLE:OFF
-        System.out.println(exc.getMessage());
-        System.out.println("Use AWSResource -help ");
-        //CHECKSTYLE:ON
+      if (mon.version) {
+        VersionInfo.displayVersion();
+        return;
+      }
+
+      if (mon.buildInfo) {
+        VersionInfo.displayBuildInfo();
+        return;
+      }
+
+    } catch (ParameterException exc) {
+
+      //CHECKSTYLE:OFF
+      System.out.println(exc.getMessage());
+      System.out.println("Use AWSResource -help ");
+      //CHECKSTYLE:ON
 
     }
 

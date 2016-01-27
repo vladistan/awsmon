@@ -1,0 +1,135 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'idea'
+apply plugin: 'checkstyle'
+apply plugin: 'sonar-runner'
+apply plugin: 'maven-publish'
+apply plugin: 'net.saliman.cobertura'
+apply plugin: 'com.jfrog.artifactory'
+
+/**
+ * Common Configuration
+ */
+
+repositories {
+  maven {
+    name 'FourV_Artifacts'
+    url 'https://fourv.artifactoryonline.com/fourv/build-snapshot-local'
+    credentials {
+      username = artifactory_user
+      password = artifactory_password
+    }
+  }
+}
+
+checkstyle {
+  toolVersion = '6.14.1'
+  project.ext.checkstyleVersion = '6.14'
+  ignoreFailures = true
+  configFile = file("${project.rootDir}/checkstyle.xml")
+  configurations {
+    checkstyle
+  }
+  dependencies {
+    assert project.hasProperty("checkstyleVersion")
+    checkstyle "com.puppycrawl.tools:checkstyle:${checkstyleVersion}"
+  }
+}
+
+cobertura {
+  coverageFormats = ['xml', 'html']
+}
+
+sonarRunner {
+  sonarProperties {
+    property "sonar.host.url", sonarHttpUrl
+    property "sonar.jdbc.url", sonarJdbcUrl
+    property "sonar.dynamicAnalysis", "reuseReports"
+    property "sonar.java.coveragePlugin", "cobertura"
+    property "sonar.cobertura.reportPath", "build/reports/cobertura/coverage.xml"
+    property "sonar.scm.provider", "git"
+    property "sonar.login", "sonar"
+    property "sonar.password", sonarPassword
+  }
+}
+
+compileJava {
+  options.fork = true
+  options.incremental = true
+}
+
+test {
+  testLogging.showStandardStreams = true
+  minHeapSize = "128m"
+  maxHeapSize = "1024m"
+  jvmArgs '-XX:MaxPermSize=256m'
+
+}
+
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+/**
+ * Common Tasks
+ */
+task sourcesJar(type: Jar) {
+  classifier 'sources'
+  from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  classifier 'javadoc'
+  from javadoc.destinationDir
+}
+
+/**
+ * Common Artifacts
+ */
+artifacts {
+  archives sourcesJar
+  archives javadocJar
+}
+
+publishing {
+  publications {
+    jar(MavenPublication) {
+      groupId group
+      artifactId artifactId
+      from components.java
+    }
+  }
+
+}
+
+
+artifactory {
+  contextUrl = artifactory_contextUrl
+  //The base Artifactory URL if not overridden by the publisher/resolver
+  publish {
+    repository {
+      repoKey =  publish_repo
+      username = artifactory_user
+      password = artifactory_password
+      maven = true
+    }
+    resolve {
+      repository {
+        repoKey =  resolve_repo
+        username = artifactory_user
+        password = artifactory_password
+        maven = true
+      }
+    }
+    defaults {
+      publishPom = true
+      publishArtifacts = true
+      publications('jar')
+      properties = ['qa.level': 'basic', 'dev.team': 'core']
+    }
+  }
+}
+
+jar {
+  baseName artifactId
+}

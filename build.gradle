@@ -3,43 +3,50 @@
  */
 buildscript {
 
-    repositories {
-        jcenter()
-        mavenCentral()
+  repositories {
+    maven {
+      url 'https://fourv.artifactoryonline.com/fourv/build-snapshot-local'
+      credentials {
+        username = artifactory_user
+        password = artifactory_password
+      }
     }
+  }
 
-    dependencies {
-        classpath 'com.github.jacobono:gradle-jaxb-plugin:1.3.6'
-    }
+  dependencies {
+    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
+    classpath "net.saliman:gradle-cobertura-plugin:2.3.0"
+    classpath 'com.github.jacobono:gradle-jaxb-plugin:1.3.6'
+  }
 }
 
-plugins {
-    id "net.saliman.cobertura" version "2.2.8"
-}
 
-def sonarHttpUrl = 'http://sonar.fourvinternal.com:9000/'
-def sonarJdbcUrl = 'jdbc:postgresql://sonardb.cgb9hxawgxgn.us-east-1.rds.amazonaws.com:5432/SonarDB'
-def sonarPassword = "$System.env.SONAR_PASSWORD"
+apply from: 'common.gradle'
 
-apply plugin: 'java'
+
 apply plugin: 'application'
 apply plugin: 'com.github.jacobono.jaxb'
-apply plugin: 'checkstyle'
-apply plugin: 'sonar-runner'
 
+dependencies {
+  testCompile 'junit:junit:4.+'
+  testCompile 'org.mockito:mockito-core:1.9.5'
+  testCompile 'org.assertj:assertj-core:2.2.0'
 
-repositories {
-    mavenCentral()
+  testRuntime "org.slf4j:slf4j-log4j12:1.7.5"
+  testRuntime "log4j:log4j:1.2.7"
+
+  compile 'com.amazonaws:aws-java-sdk:1.9.8'
+  compile 'commons-io:commons-io:2.4'
+  compile 'joda-time:joda-time:2.9'
+  compile 'com.beust:jcommander:1.48'
+
+  jaxb 'com.sun.xml.bind:jaxb-xjc:2.2.7-b41'
+  jaxb 'com.sun.xml.bind:jaxb-impl:2.2.7-b41'
+  jaxb 'javax.xml.bind:jaxb-api:2.2.7'
 }
 
 cobertura {
-    coverageFormats = [ 'xml', 'html' ]
-    coverageExcludes = [ '.*com.jaxb.*' ]
-}
-
-checkstyle {
-
-   toolVersion = '6.12'
+  coverageExcludes = ['.*com.jaxb.*']
 }
 
 tasks.withType(Checkstyle) {
@@ -47,44 +54,18 @@ tasks.withType(Checkstyle) {
   exclude '**/com/fourv/internal/*/test/**'
 }
 
-sonarRunner {
-    sonarProperties {
-        property "sonar.host.url", "${sonarHttpUrl}"
-        property "sonar.jdbc.url", "${sonarJdbcUrl}"
-        property "sonar.dynamicAnalysis", "reuseReports"
-        property "sonar.java.coveragePlugin", "cobertura"
-        property "sonar.cobertura.reportPath", "build/reports/cobertura/coverage.xml"
-        property "sonar.scm.provider", "git"
-        property "sonar.login", "sonar"
-        property "sonar.password", "${sonarPassword}"
-        property 'sonar.exclusions', 'file:**/src-gen/**'
-    }
+tasks.withType(Javadoc) {
+  exclude '**/com/jaxb/**'
+  exclude '**/com/fourv/**/AWSResourceMonitor.java'
+  exclude '**/com/fourv/internal/*/test/**'
 }
-
-
-// Iterate over the source sets
-sourceSets.all {
-  println name
-}
-
-sourceSets {
-  main {
-    println allJava
-  }
-
-  notGen {
-    println allJava
-  }
-}
-
-
 
 jaxb {
-    xsdDir = "src/main/resources/"
-    xjc {
-        generatePackage = 'com.jaxb.junit'
-        destinationDir = 'src-gen'
-    }
+  xsdDir = "src/main/resources/"
+  xjc {
+    generatePackage = 'com.jaxb.junit'
+    destinationDir = 'src-gen'
+  }
 }
 
 mainClassName = "com.fourv.internal.awsresourcemonitor.AWSResourceMonitor"
@@ -92,25 +73,8 @@ mainClassName = "com.fourv.internal.awsresourcemonitor.AWSResourceMonitor"
 compileJava.dependsOn xjc
 
 sourceSets {
-    main {
-        java { srcDirs = ['src/main/java', 'src-gen' ] }
-    }
+  main {
+    java { srcDirs = ['src/main/java', 'src-gen'] }
+  }
 }
 
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.+'
-    testCompile 'org.mockito:mockito-core:1.9.5'
-    testCompile 'org.assertj:assertj-core:2.2.0'
-
-    testRuntime "org.slf4j:slf4j-log4j12:1.7.5"
-    testRuntime "log4j:log4j:1.2.7"
-
-    compile group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.9.8'
-    compile group: 'commons-io', name: 'commons-io', version: '2.4'
-    compile 'joda-time:joda-time:2.9'
-    compile 'com.beust:jcommander:1.48'
-
-  jaxb 'com.sun.xml.bind:jaxb-xjc:2.2.7-b41'
-    jaxb 'com.sun.xml.bind:jaxb-impl:2.2.7-b41'
-    jaxb 'javax.xml.bind:jaxb-api:2.2.7'
-}

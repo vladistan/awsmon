@@ -1,1 +1,5 @@
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras ut nisl quis nunc finibus ultricies. Ut elementum, turpis et iaculis faucibus, metus augue laoreet erat, at consequat massa nulla at purus. Suspendisse vehicula justo tellus, vel interdum mauris feugiat a. Nam eget ante vel odio elementum sagittis. Pellentesque eget eleifend justo. Integer tempor fermentum elit. Etiam vel libero eleifend, auctor purus sed, varius enim. Nulla purus tellus, accumsan non diam ut, blandit tincidunt eros. Ut sodales eget justo in facilisis. In commodo arcu tellus, sit amet elementum libero rutrum ut. Integer luctus magna quis massa varius, pharetra tristique libero malesuada. Suspendisse suscipit felis eu enim pretium, eu hendrerit tellus dapibus.
+This is resource monitor thing
+
+It queries EC2 and maintains report of violations
+
+Latest report is here  https://fourv.ci.cloudbees.com/job/AWSResourceMonitor/

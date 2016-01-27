@@ -49,6 +49,13 @@ cobertura {
   coverageExcludes = ['.*com.jaxb.*']
 }
 
+sonarRunner {
+   sonarProperties {
+       property "sonar.exclusions",  "src-gen/**"
+   }
+}
+
+
 tasks.withType(Checkstyle) {
   exclude '**/com/jaxb/**'
   exclude '**/com/fourv/internal/*/test/**'

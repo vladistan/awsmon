@@ -1,13 +1,12 @@
-package com.fourv.internal.awsresourcemonitor.test;
+package org.vlad.awsresourcemonitor.test;
 
-
-import com.fourv.internal.awsresourcemonitor.VersionInfo;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.vlad.awsresourcemonitor.VersionInfo;
 
-import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 public class TestVersionInfo {
 

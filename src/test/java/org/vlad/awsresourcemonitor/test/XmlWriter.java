@@ -1,4 +1,4 @@
-package com.fourv.internal.awsresourcemonitor.test; /**
+package org.vlad.awsresourcemonitor.test; /**
  *
  * Project: GreySpark Core
  * (c) 2015 FourV Systems, LLC.
@@ -11,9 +11,8 @@ package com.fourv.internal.awsresourcemonitor.test; /**
  *
  */
 
-import com.fourv.internal.awsresourcemonitor.Schemas;
-import com.fourv.internal.awsresourcemonitor.Util;
-import com.fourv.internal.awsresourcemonitor.test.TestUtil;
+import org.vlad.awsresourcemonitor.Schemas;
+import org.vlad.awsresourcemonitor.Util;
 import com.jaxb.junit.ObjectFactory;
 import com.jaxb.junit.Testcase;
 import com.jaxb.junit.Testsuite;

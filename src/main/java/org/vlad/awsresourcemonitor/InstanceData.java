@@ -11,7 +11,7 @@
  *
  */
 
-package com.fourv.internal.awsresourcemonitor;
+package org.vlad.awsresourcemonitor;
 
 
 import com.amazonaws.services.ec2.model.Instance;
@@ -67,8 +67,7 @@ public class InstanceData {
     AllowedLifeCycleValues.add("Spot");
 
     AllowedProjectValues.add("Development Infrastructure");
-    AllowedProjectValues.add("GreySpark (v1.0)");
-    AllowedProjectValues.add("GreySpark Cyber (v1.0)");
+    AllowedProjectValues.add("App1 (v1.0)");
 
     AllowedServiceValues.add("VPN");
     AllowedServiceValues.add("QA");
@@ -76,19 +75,15 @@ public class InstanceData {
     AllowedServiceValues.add("Build");
     AllowedServiceValues.add("Analytics");
     AllowedServiceValues.add("Authentication");
-    AllowedServiceValues.add("Web Services");
+    AllowedServiceValues.add("Microservices");
 
-    AllowedOwnerValues.add("gmartin@fourv.com");
-    AllowedOwnerValues.add("msweeney@fourv.com");
-    AllowedOwnerValues.add("vkorolev@fourv.com");
-    AllowedOwnerValues.add("jcamp@fourv.com");
-    AllowedOwnerValues.add("rsamson@fourv.com");
-    AllowedOwnerValues.add("roman_glova@epam.com");
+    AllowedOwnerValues.add("vlad@myorg.org");
+    AllowedOwnerValues.add("bob@myorg.org");
+    AllowedOwnerValues.add("greg@myorg.org");
 
     AllowChargeLineValues.add("InternalDevops");
     AllowChargeLineValues.add("InternalDev");
     AllowChargeLineValues.add("InternalQA");
-    AllowChargeLineValues.add("SalesOps");
     AllowChargeLineValues.add("AP");
 
     final String stateName = inst.getState().getName();

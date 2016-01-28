@@ -1,4 +1,4 @@
-package com.fourv.internal.awsresourcemonitor.test; /**
+package org.vlad.awsresourcemonitor.test; /**
  *
  * Project: GreySpark Core
  * (c) 2015 FourV Systems, LLC.

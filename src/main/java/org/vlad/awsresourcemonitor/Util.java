@@ -11,7 +11,7 @@
  *
  */
 
-package com.fourv.internal.awsresourcemonitor;
+package org.vlad.awsresourcemonitor;
 
 
 import org.xml.sax.SAXException;

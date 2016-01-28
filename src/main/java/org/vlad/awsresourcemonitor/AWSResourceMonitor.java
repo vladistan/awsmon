@@ -11,7 +11,7 @@
  *
  */
 
-package com.fourv.internal.awsresourcemonitor;
+package org.vlad.awsresourcemonitor;
 
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.regions.Region;
@@ -25,11 +25,7 @@ import com.amazonaws.services.ec2.model.Reservation;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import com.jaxb.junit.Failure;
-import com.jaxb.junit.ObjectFactory;
-import com.jaxb.junit.Testcase;
-import com.jaxb.junit.Testsuite;
-import com.jaxb.junit.Testsuites;
+import com.jaxb.junit.*;
 import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Period;

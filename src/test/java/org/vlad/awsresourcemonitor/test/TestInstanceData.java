@@ -1,4 +1,4 @@
-package com.fourv.internal.awsresourcemonitor.test; /**
+package org.vlad.awsresourcemonitor.test; /**
  *
  * Project: GreySpark Core
  * (c) 2015 FourV Systems, LLC.
@@ -12,7 +12,7 @@ package com.fourv.internal.awsresourcemonitor.test; /**
  */
 
 import com.amazonaws.services.ec2.model.Instance;
-import com.fourv.internal.awsresourcemonitor.InstanceData;
+import org.vlad.awsresourcemonitor.InstanceData;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -143,22 +143,22 @@ public class TestInstanceData {
 
     Instance inst = TestUtil.getMockInstance("running", "My EC2 Instance");
 
-    TestUtil.addInstanceTag(inst, "Owner", "gmartin@fourv.com");
+    TestUtil.addInstanceTag(inst, "Owner", "vlad@myorg.org");
     InstanceData iData = new InstanceData(inst);
 
-    assertThat(iData.owner).isEqualTo("gmartin@fourv.com");
+    assertThat(iData.owner).isEqualTo("vlad@myorg.org");
 
   }
 
   @Test
-  public void ShouldSetAcceptRomanAsOwner() {
+  public void ShouldSetAcceptGregAsOwner() {
 
     Instance inst = TestUtil.getMockInstance("running", "My EC2 Instance");
 
-    TestUtil.addInstanceTag(inst, "Owner", "roman_glova@epam.com");
+    TestUtil.addInstanceTag(inst, "Owner", "vlad@myorg.org");
     InstanceData iData = new InstanceData(inst);
 
-    assertThat(iData.owner).isEqualTo("roman_glova@epam.com");
+    assertThat(iData.owner).isEqualTo("vlad@myorg.org");
 
   }
 
@@ -168,10 +168,10 @@ public class TestInstanceData {
 
     Instance inst = TestUtil.getMockInstance("running", "My EC2 Instance");
 
-    TestUtil.addInstanceTag(inst, "Owner", "doop@fourv.com");
+    TestUtil.addInstanceTag(inst, "Owner", "doop@hello.com");
     InstanceData iData = new InstanceData(inst);
 
-    assertThat(iData.tagValueErrors).contains("Invalid Owner tag value 'doop@fourv.com'");
+    assertThat(iData.tagValueErrors).contains("Invalid Owner tag value 'doop@hello.com'");
 
   }
 

@@ -2,25 +2,12 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'idea'
 apply plugin: 'checkstyle'
-apply plugin: 'sonar-runner'
 apply plugin: 'maven-publish'
 apply plugin: 'net.saliman.cobertura'
-apply plugin: 'com.jfrog.artifactory'
 
 /**
  * Common Configuration
  */
-
-repositories {
-  maven {
-    name 'FourV_Artifacts'
-    url 'https://fourv.artifactoryonline.com/fourv/build-snapshot-local'
-    credentials {
-      username = artifactory_user
-      password = artifactory_password
-    }
-  }
-}
 
 checkstyle {
   toolVersion = '6.14.1'
@@ -40,20 +27,15 @@ cobertura {
   coverageFormats = ['xml', 'html']
 }
 
-sonarRunner {
-  sonarProperties {
-    property "sonar.host.url", sonarHttpUrl
-    property "sonar.jdbc.url", sonarJdbcUrl
-    property "sonar.dynamicAnalysis", "reuseReports"
+sonarqube {
+  properties {
     property "sonar.java.coveragePlugin", "cobertura"
     property "sonar.cobertura.reportPath", "build/reports/cobertura/coverage.xml"
     property "sonar.scm.provider", "git"
     property "sonar.projectName", artifactId
     property "sonar.projectDescription", artifactId
     property "sonar.projectVersion",  version
-
-    property "sonar.login", "sonar"
-    property "sonar.password", sonarPassword
+    property "sonar.projectKey", group + ':' + artifactId
   }
 }
 
@@ -106,34 +88,11 @@ publishing {
 
 }
 
-
-artifactory {
-  contextUrl = artifactory_contextUrl
-  //The base Artifactory URL if not overridden by the publisher/resolver
-  publish {
-    repository {
-      repoKey =  publish_repo
-      username = artifactory_user
-      password = artifactory_password
-      maven = true
-    }
-    resolve {
-      repository {
-        repoKey =  resolve_repo
-        username = artifactory_user
-        password = artifactory_password
-        maven = true
-      }
-    }
-    defaults {
-      publishPom = true
-      publishArtifacts = true
-      publications('jar')
-      properties = ['qa.level': 'basic', 'dev.team': 'core']
-    }
-  }
-}
-
 jar {
   baseName artifactId
+}
+
+repositories {
+  mavenCentral()
+  jcenter()
 }

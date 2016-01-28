@@ -1,6 +1,6 @@
 /**
  *
- * Project: GreySpark Core
+ * Project: App1 Core
  * (c) 2015 FourV Systems, LLC.
  * Unpublished-rights reserved under the copyrights laws of the United States.
  * All use of this commercial software is subject to the terms and conditions of
@@ -10,7 +10,7 @@
  * FourV Systems, LLC, 8 Market Place,  Baltimore, MD 21202.
  *
  */
-package com.fourv.internal.awsresourcemonitor.test;
+package org.vlad.awsresourcemonitor.test;
 
 import com.amazonaws.regions.Region;
 import com.amazonaws.services.ec2.AmazonEC2;
@@ -18,14 +18,14 @@ import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Reservation;
-import com.fourv.internal.awsresourcemonitor.AWSResourceMonitor;
-import com.fourv.internal.awsresourcemonitor.InstanceData;
 import com.jaxb.junit.Testcase;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.vlad.awsresourcemonitor.AWSResourceMonitor;
+import org.vlad.awsresourcemonitor.InstanceData;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
@@ -54,7 +54,7 @@ public class BasicTests {
     AWSResourceMonitor mon = new AWSResourceMonitor();
 
     mon.setjUnitFormatReportPath(testFolder.getRoot().toPath().toString());
-    mon.setNamePattern("G.*");
+    mon.setNamePattern("my.*");
     mon.setMaxAllowedHoursToRun("2");
 
     AmazonEC2 ec2 = mock(AmazonEC2.class);
@@ -77,39 +77,39 @@ public class BasicTests {
     when(res2.getInstances()).thenReturn(list2);
 
 
-    Instance inst = TestUtil.getMockInstance("running", "GreySparkCyberDev-gmartinDemo Master");
+    Instance inst = TestUtil.getMockInstance("running", "myOrg-app1 Master");
     list1.add(inst);
     TestUtil.addInstanceTag(inst, "Lifecycle", "POC");
     TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
-    TestUtil.addInstanceTag(inst, "Owner", "gmartin@fourv.com");
+    TestUtil.addInstanceTag(inst, "Owner", "bob@myorg.org");
     TestUtil.addInstanceTag(inst, "Service", "VPN");
-    TestUtil.addInstanceTag(inst, "Project", "GreySpark (v1.0)");
+    TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
 
 
 
-    inst = TestUtil.getMockInstance("terminated", "GreySparkCyberDev-gmartinDemoServices SSO Server", 1);
+    inst = TestUtil.getMockInstance("terminated", "myOrg-app1Services SSO Server", 1);
     TestUtil.addInstanceTag(inst, "Service", "VPN");
     TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
-    TestUtil.addInstanceTag(inst, "Owner", "jcamp@fourv.com");
+    TestUtil.addInstanceTag(inst, "Owner", "vlad@myorg.org");
     TestUtil.addInstanceTag(inst, "Lifecycle", "OnDemand");
-    TestUtil.addInstanceTag(inst, "Project", "GreySpark (v1.0)");
+    TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
 
     list1.add(inst);
 
-    inst = TestUtil.getMockInstance("running", "GreySparkCyberDev-SweeneyDev1Services SSO Server", 4);
+    inst = TestUtil.getMockInstance("running", "myOrg-app2Services SSO Server", 4);
     TestUtil.addInstanceTag(inst, "Service", "VPN");
     TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
-    TestUtil.addInstanceTag(inst, "Owner", "jcamp@fourv.com");
+    TestUtil.addInstanceTag(inst, "Owner", "vlad@myorg.org");
     TestUtil.addInstanceTag(inst, "Lifecycle", "OnDemand");
-    TestUtil.addInstanceTag(inst, "Project", "GreySpark (v1.0)");
+    TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
     list2.add(inst);
 
-    inst = TestUtil.getMockInstance("running", "GreySparkCyberDev-SweeneyDev1Services WebApp", 3);
+    inst = TestUtil.getMockInstance("running", "myOrg-app2Services WebApp", 3);
     TestUtil.addInstanceTag(inst, "Service", "VPN");
     TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
-    TestUtil.addInstanceTag(inst, "Owner", "jcamp@fourv.com");
+    TestUtil.addInstanceTag(inst, "Owner", "vlad@myorg.org");
     TestUtil.addInstanceTag(inst, "Lifecycle", "Spot");
-    TestUtil.addInstanceTag(inst, "Project", "GreySpark (v1.0)");
+    TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
     list2.add(inst);
 
     mon.run(ec2);
@@ -127,7 +127,7 @@ public class BasicTests {
     AWSResourceMonitor mon = new AWSResourceMonitor();
 
     mon.setjUnitFormatReportPath(testFolder.getRoot().toPath().toString());
-    mon.setNamePattern("G.*");
+    mon.setNamePattern("my.*");
     mon.setMaxAllowedHoursToRun("2");
 
     AmazonEC2 ec2 = mock(AmazonEC2.class);
@@ -146,22 +146,22 @@ public class BasicTests {
     when(res1.getInstances()).thenReturn(list1);
 
 
-    Instance inst = TestUtil.getMockInstance("running", "GreySparkCyberDev-gmartinDemo Master");
-    TestUtil.addInstanceTag(inst, "Owner", "jcamp@fourv.com");
-    TestUtil.addInstanceTag(inst, "Project", "GreySpark (v1.0)");
+    Instance inst = TestUtil.getMockInstance("running", "myOrg-app1 Master");
+    TestUtil.addInstanceTag(inst, "Owner", "vlad@myorg.org");
+    TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
     TestUtil.addInstanceTag(inst, "Service", "VPN");
     TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
     list1.add(inst);
 
 
-    inst = TestUtil.getMockInstance("terminated", "GreySparkCyberDev-gmartinDemoServices SSO Server", 1);
-    TestUtil.addInstanceTag(inst, "Owner", "jcamp@fourv.com");
-    TestUtil.addInstanceTag(inst, "Project", "GreySpark (v1.0)");
+    inst = TestUtil.getMockInstance("terminated", "myOrg-app1Services SSO Server", 1);
+    TestUtil.addInstanceTag(inst, "Owner", "vlad@myorg.org");
+    TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
     TestUtil.addInstanceTag(inst, "Service", "Build");
     TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
     list1.add(inst);
 
-    inst = TestUtil.getMockInstance("running", "GreySparkCyberDev-SweeneyDev1Services SSO Server", 4);
+    inst = TestUtil.getMockInstance("running", "myOrg-app2Services SSO Server", 4);
     list1.add(inst);
 
     mon.run(ec2);
@@ -175,7 +175,7 @@ public class BasicTests {
   public void instanceDataMustHaveRegionFieldFilled() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException {
 
     AWSResourceMonitor mon = new AWSResourceMonitor();
-    mon.setNamePattern("G.*");
+    mon.setNamePattern("my.*");
     mon.setMaxAllowedHoursToRun("2");
 
     AmazonEC2 ec2 = mock(AmazonEC2.class);
@@ -194,7 +194,7 @@ public class BasicTests {
     List<Instance> list1 = new ArrayList<Instance>();
     when(res1.getInstances()).thenReturn(list1);
 
-    Instance inst = TestUtil.getMockInstance("running", "GreySparkCyberDev-gmartinDemo Master");
+    Instance inst = TestUtil.getMockInstance("running", "myOrg-App1 Master");
     list1.add(inst);
 
 
@@ -210,7 +210,7 @@ public class BasicTests {
   public void instanceDataMustHaveRegionFieldFilledWhenMultipleRegionsArePresent() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException {
 
     AWSResourceMonitor mon = new AWSResourceMonitor();
-    mon.setNamePattern("G.*");
+    mon.setNamePattern("my.*");
     mon.setMaxAllowedHoursToRun("2");
 
     AmazonEC2 ec2 = mock(AmazonEC2.class);
@@ -230,7 +230,7 @@ public class BasicTests {
     List<Instance> list1 = new ArrayList<Instance>();
     when(res1.getInstances()).thenReturn(list1);
 
-    Instance inst = TestUtil.getMockInstance("running", "GreySparkCyberDev-gmartinDemo Master");
+    Instance inst = TestUtil.getMockInstance("running", "myOrg-App1 Master");
     list1.add(inst);
 
 
@@ -251,7 +251,7 @@ public class BasicTests {
     AWSResourceMonitor mon = new AWSResourceMonitor();
 
     mon.setjUnitFormatReportPath(testFolder.getRoot().toPath().toString());
-    mon.setNamePattern("G.*");
+    mon.setNamePattern("my.*");
     mon.setMaxAllowedHoursToRun("2");
 
     AmazonEC2 ec2 = mock(AmazonEC2.class);
@@ -270,24 +270,24 @@ public class BasicTests {
     when(res1.getInstances()).thenReturn(list1);
 
 
-    Instance inst = TestUtil.getMockInstance("running", "GreySparkCyberDev-gmartinDemo Master");
+    Instance inst = TestUtil.getMockInstance("running", "myOrg-app1 Master");
     list1.add(inst);
     TestUtil.addInstanceTag(inst, "Service", "VPN");
     TestUtil.addInstanceTag(inst, "Lifecycle", "Bob");
     TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
-    TestUtil.addInstanceTag(inst, "Owner", "jcamp@fourv.com");
-    TestUtil.addInstanceTag(inst, "Project", "GreySpark (v1.0)");
+    TestUtil.addInstanceTag(inst, "Owner", "vlad@myorg.org");
+    TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
 
-    list1.add(TestUtil.getMockInstance("terminated", "GreySparkCyberDev-gmartinDemoServices SSO Server", 1));
+    list1.add(TestUtil.getMockInstance("terminated", "myOrg-app1Services SSO Server", 1));
 
     // Should give error for instances that already have other violations
-    inst = TestUtil.getMockInstance("running", "GreySparkCyberDev-SweeneyDev1Services SSO Server", 4);
+    inst = TestUtil.getMockInstance("running", "myOrg-app2Services SSO Server", 4);
     list1.add(inst);
     TestUtil.addInstanceTag(inst, "Lifecycle", "Bob");
     TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
     TestUtil.addInstanceTag(inst, "Service", "VPN");
-    TestUtil.addInstanceTag(inst, "Owner", "jcamp@fourv.com");
-    TestUtil.addInstanceTag(inst, "Project", "GreySpark (v1.0)");
+    TestUtil.addInstanceTag(inst, "Owner", "vlad@myorg.org");
+    TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
 
 
     mon.run(ec2);
@@ -301,7 +301,7 @@ public class BasicTests {
   public void shouldNotFlagLongRunningInstancesWithLifeCyclePermanent() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException {
 
     AWSResourceMonitor mon = new AWSResourceMonitor();
-    mon.setNamePattern("G.*");
+    mon.setNamePattern("myOrg.*");
     mon.setMaxAllowedHoursToRun("2");
     mon.setjUnitFormatReportPath(testFolder.getRoot().toPath().toString());
 
@@ -321,17 +321,13 @@ public class BasicTests {
     List<Instance> list1 = new ArrayList<Instance>();
     when(res1.getInstances()).thenReturn(list1);
 
-    Instance inst = TestUtil.getMockInstance("running", "GreySparkCyberDev-gmartinDemo Master", 480);
+    Instance inst = TestUtil.getMockInstance("running", "myOrg-app1 Master", 480);
     list1.add(inst);
     TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
-    TestUtil.addInstanceTag(inst, "Service", "VPN");
-    TestUtil.addInstanceTag(inst, "Owner", "jcamp@fourv.com");
-    TestUtil.addInstanceTag(inst, "Project", "GreySpark (v1.0)");
     TestUtil.addInstanceTag(inst, "Lifecycle", "Permanent");
-    TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
     TestUtil.addInstanceTag(inst, "Service", "VPN");
-    TestUtil.addInstanceTag(inst, "Owner", "jcamp@fourv.com");
-    TestUtil.addInstanceTag(inst, "Project", "GreySpark (v1.0)");
+    TestUtil.addInstanceTag(inst, "Owner", "vlad@myorg.org");
+    TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
 
 
     mon.run(ec2);
@@ -357,17 +353,16 @@ public class BasicTests {
 
     mon.setjUnitFormatReportPath(testFolder.getRoot().toPath().toString());
 
-    mon.addResult(AWSResourceMonitor.getFailingTestCase("GreySparkCyberDev-gmartinDemo Master", "RunningTime",
+    mon.addResult(AWSResourceMonitor.getFailingTestCase("myOrg-app1 Master", "RunningTime",
       "Does not have required tag 'Lifecycle'"));
 
+    mon.addResult(AWSResourceMonitor.getPassingTestCase("myOrg-app1Services SSO Server", "RunningTime"));
 
-    mon.addResult(AWSResourceMonitor.getPassingTestCase("GreySparkCyberDev-gmartinDemoServices SSO Server", "RunningTime"));
 
-
-    mon.addResult(AWSResourceMonitor.getFailingTestCase("GreySparkCyberDev-SweeneyDev1Services SSO Server", "RunningTime",
-      String.format(message, "GreySparkCyberDev-SweeneyDev1Services SSO Server")));
-    mon.addResult(AWSResourceMonitor.getFailingTestCase("GreySparkCyberDev-SweeneyDev1Services WebApp", "RunningTime",
-      String.format(message, "GreySparkCyberDev-SweeneyDev1Services WebApp")));
+    mon.addResult(AWSResourceMonitor.getFailingTestCase("myOrg-app2Services SSO Server", "RunningTime",
+      String.format(message, "myOrg-app2Services SSO Server")));
+    mon.addResult(AWSResourceMonitor.getFailingTestCase("myOrg-app2Services WebApp", "RunningTime",
+      String.format(message, "myOrg-app2Services WebApp")));
 
     mon.writeJunitReport();
 
@@ -399,13 +394,13 @@ public class BasicTests {
 
     mon.assessInstances(instList);
 
-    Instance inst = TestUtil.getMockInstance("running", "GreySparkCyberDev-SweeneyDev1Services SSO Server", 4);
+    Instance inst = TestUtil.getMockInstance("running", "myOrg-app2Services SSO Server", 4);
     TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
     TestUtil.addInstanceTag(inst, "Service", "VPN");
-    TestUtil.addInstanceTag(inst, "Project", "GreySpark (v1.0)");
+    TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
     TestUtil.addInstanceTag(inst, "Lifecycle", "Permanent");
     TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
-    TestUtil.addInstanceTag(inst, "Owner", "jcamp@fourv.com");
+    TestUtil.addInstanceTag(inst, "Owner", "vlad@myorg.org");
 
 
     InstanceData instData = new InstanceData(inst);

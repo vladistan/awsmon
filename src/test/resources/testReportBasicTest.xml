@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <testsuites>
     <testsuite name="AwsResources" tests="4" failures="3">
-        <testcase name="RunningTime" classname="GreySparkCyberDev-gmartinDemo Master">
+        <testcase name="RunningTime" classname="myOrg-app1 Master">
             <failure message="Does not have required tag 'Lifecycle'"/>
         </testcase>
-        <testcase name="RunningTime" classname="GreySparkCyberDev-gmartinDemoServices SSO Server"/>
-        <testcase name="RunningTime" classname="GreySparkCyberDev-SweeneyDev1Services SSO Server">
-            <failure message="Instance 'GreySparkCyberDev-SweeneyDev1Services SSO Server', has been running longer than the allowable time."/>
+        <testcase name="RunningTime" classname="myOrg-app1Services SSO Server"/>
+        <testcase name="RunningTime" classname="myOrg-app2Services SSO Server">
+            <failure message="Instance 'myOrg-app2Services SSO Server', has been running longer than the allowable time."/>
         </testcase>
-        <testcase name="RunningTime" classname="GreySparkCyberDev-SweeneyDev1Services WebApp">
-            <failure message="Instance 'GreySparkCyberDev-SweeneyDev1Services WebApp', has been running longer than the allowable time."/>
+        <testcase name="RunningTime" classname="myOrg-app2Services WebApp">
+            <failure message="Instance 'myOrg-app2Services WebApp', has been running longer than the allowable time."/>
         </testcase>
     </testsuite>
 </testsuites>

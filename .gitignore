@@ -2,3 +2,4 @@ dev-infra-split-aws.iml
 .gradle
 src-gen
 schema
+/aws_mon_robot.iml

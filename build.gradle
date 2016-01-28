@@ -4,20 +4,19 @@
 buildscript {
 
   repositories {
-    maven {
-      url 'https://fourv.artifactoryonline.com/fourv/build-snapshot-local'
-      credentials {
-        username = artifactory_user
-        password = artifactory_password
-      }
-    }
+    mavenCentral()
+    jcenter()
   }
 
   dependencies {
-    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
     classpath "net.saliman:gradle-cobertura-plugin:2.3.0"
     classpath 'com.github.jacobono:gradle-jaxb-plugin:1.3.6'
   }
+
+}
+
+plugins {
+  id "org.sonarqube" version "2.6"
 }
 
 
@@ -49,22 +48,22 @@ cobertura {
   coverageExcludes = ['.*com.jaxb.*']
 }
 
-sonarRunner {
-   sonarProperties {
-       property "sonar.exclusions",  "src-gen/**"
+sonarqube {
+   properties {
+       property "sonar.exclusions",  "src-gen/**,**/autorevision.java"
    }
 }
 
 
 tasks.withType(Checkstyle) {
   exclude '**/com/jaxb/**'
-  exclude '**/com/fourv/internal/*/test/**'
+  exclude '**/org/vlad/internal/*/test/**'
 }
 
 tasks.withType(Javadoc) {
   exclude '**/com/jaxb/**'
-  exclude '**/com/fourv/**/AWSResourceMonitor.java'
-  exclude '**/com/fourv/internal/*/test/**'
+  exclude '**/org/vlad/**/AWSResourceMonitor.java'
+  exclude '**/org/vlad/internal/*/test/**'
 }
 
 jaxb {
@@ -75,7 +74,7 @@ jaxb {
   }
 }
 
-mainClassName = "com.fourv.internal.awsresourcemonitor.AWSResourceMonitor"
+mainClassName = "org.vlad.awsresourcemonitor.AWSResourceMonitor"
 
 compileJava.dependsOn xjc
 

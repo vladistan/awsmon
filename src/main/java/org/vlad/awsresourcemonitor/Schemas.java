@@ -12,7 +12,7 @@
  */
 
 
-package com.fourv.internal.awsresourcemonitor;
+package org.vlad.awsresourcemonitor;
 
 /**
  * This class defines mappings to XSD schema files.

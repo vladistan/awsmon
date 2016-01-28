@@ -48,6 +48,10 @@ sonarRunner {
     property "sonar.java.coveragePlugin", "cobertura"
     property "sonar.cobertura.reportPath", "build/reports/cobertura/coverage.xml"
     property "sonar.scm.provider", "git"
+    property "sonar.projectName", artifactId
+    property "sonar.projectDescription", artifactId
+    property "sonar.projectVersion",  version
+
     property "sonar.login", "sonar"
     property "sonar.password", sonarPassword
   }

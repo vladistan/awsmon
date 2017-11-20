@@ -30,10 +30,6 @@
     <property name="severity" value="warning"/>
   </module>
   <module name="SuppressionCommentFilter"/>
-  <module name="Header">
-    <property name="severity" value="warning"/>
-    <property name="header" value="#"/>
-  </module>
   <module name="RegexpSingleline">
     <property name="severity" value="warning"/>
     <property name="format" value="^(?=[ \t]*\*[ \t]*).+@author.+$"/>
@@ -82,8 +78,6 @@
       <property name="max" value="100"/>
       <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
       <property name="severity" value="warning"/>
-    </module>
-    <module name="AvoidStarImport">
     </module>
     <module name="OneTopLevelClass">
       <property name="severity" value="info"/>
@@ -212,11 +206,6 @@
     <module name="VariableDeclarationUsageDistance"/>
     <module name="FinalClass">
       <property name="severity" value="warning"/>
-    </module>
-    <module name="CustomImportOrder">
-      <property name="specialImportsRegExp" value="com.google"/>
-      <property name="sortImportsInGroupAlphabetically" value="true"/>
-      <property name="customImportOrderRules" value="STATIC###SPECIAL_IMPORTS###THIRD_PARTY_PACKAGE###STANDARD_JAVA_PACKAGE"/>
     </module>
     <module name="MethodParamPad"/>
     <module name="OperatorWrap">

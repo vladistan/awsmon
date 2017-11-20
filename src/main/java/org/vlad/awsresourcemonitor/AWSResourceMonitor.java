@@ -1,15 +1,11 @@
 /**
  *
- * Project: GreySpark Core
- * (c) 2015 FourV Systems, LLC.
- * Unpublished-rights reserved under the copyrights laws of the United States.
- * All use of this commercial software is subject to the terms and conditions of
- * the manufacturer's End User License Agreement.
+ * Copyright 2017 Vlad Korolev
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * Manufacturer is:
- * FourV Systems, LLC, 8 Market Place,  Baltimore, MD 21202.
- *
- */
+ **/
+
 
 package org.vlad.awsresourcemonitor;
 
@@ -44,10 +40,13 @@ import java.util.List;
 
 
 /**
- * This class monitors the AWS resources for instances that match a specific pattern, and has been running for longer
- * than the allowable time. This class assumes that the following environment variables are set: AWS_ACCESS_KEY_ID - The
- * access key for AWS AWS_SECRET_KEY - The secret key for AWS InstanceNamePattern - The regular expression pattern to
- * match the instance name to MaxRunningTimeInHours - The maximum amount of time in hours.
+ * This class monitors the AWS resources for instances that match a specific
+ * pattern, and has been running for longerthan the allowable time. This class
+ * assumes that the following environment variables are set:
+ * AWS_ACCESS_KEY_ID - The access key for AWS
+ * AWS_SECRET_KEY - The secret key for AWS
+ * InstanceNamePattern - The regular expression pattern for instance name
+ * MaxRunningTimeInHours - The maximum amount of time in hours.
  */
 public class AWSResourceMonitor {
 
@@ -68,7 +67,7 @@ public class AWSResourceMonitor {
   @Parameter(names = {"-reportPath"}, description = "Junit report path")
   private String jUnitFormatReportPath;
 
-  @Parameter(names = {"-maxTime"},  description = "Max allowed time in hours")
+  @Parameter(names = {"-maxTime"}, description = "Max allowed time in hours")
   private Period maxAllowedHoursToRun = new Period(12, 0, 0, 0);
 
 
@@ -77,13 +76,9 @@ public class AWSResourceMonitor {
 
 
   /**
-   * Main method
+   * Main method.
+   *
    * @param args command line arguments
-   * @throws JAXBException
-   * @throws SAXException
-   * @throws IOException
-   * @throws TransformerException
-   * @throws ParserConfigurationException
    */
   public static void main(String[] args) throws JAXBException, SAXException, IOException,
     TransformerException, ParserConfigurationException {
@@ -123,8 +118,9 @@ public class AWSResourceMonitor {
   }
 
   /**
-   * Generate passing test case for report insertion
-   * @param name - instance name
+   * Generate passing test case for report insertion.
+   *
+   * @param name     - instance name
    * @param testType - test name
    * @return test case
    */
@@ -136,10 +132,11 @@ public class AWSResourceMonitor {
   }
 
   /**
-   * Generate failing testcase for report insertion
-   * @param instName  - instance name
-   * @param testName  - test name
-   * @param message   - error message
+   * Generate failing testcase for report insertion.
+   *
+   * @param instName - instance name
+   * @param testName - test name
+   * @param message  - error message
    * @return test case
    */
   public static Testcase getFailingTestCase(String instName, String testName, String message) {
@@ -153,44 +150,47 @@ public class AWSResourceMonitor {
   }
 
   /**
-   * Set path to JUnit output
+   * Set path to JUnit output.
+   *
    * @param jUnitFormatReportPath - directory to place output in
    */
   public void setjUnitFormatReportPath(String jUnitFormatReportPath) {
-    if (jUnitFormatReportPath != null)
+    if (jUnitFormatReportPath != null) {
       this.jUnitFormatReportPath = jUnitFormatReportPath;
+    }
   }
 
   /**
-   * Set maximum allowed time to run
+   * Set maximum allowed time to run.
+   *
    * @param maxRunningTimeInHours - maximum allowed hours
    */
   public void setMaxAllowedHoursToRun(String maxRunningTimeInHours) {
-    if (maxRunningTimeInHours != null)
+    if (maxRunningTimeInHours != null) {
       maxAllowedHoursToRun = new Period(Integer.parseInt(maxRunningTimeInHours), 0, 0, 0);
+    }
   }
 
-  /** Set name pattern to use
+  /**
+   * Set name pattern to use.
    *
    * @param namePattern - regular expression of the pattern
    */
   public void setNamePattern(String namePattern) {
-    if (namePattern != null)
+    if (namePattern != null) {
       this.namePattern = namePattern;
+    }
   }
 
   /**
-   * Run resource monitoring job
+   * Run resource monitoring job.
+   *
    * @param ec2 reference to EC2 API object
-   * @throws JAXBException
-   * @throws SAXException
-   * @throws IOException
-   * @throws TransformerException
-   * @throws ParserConfigurationException
+   *
    */
   public void run(AmazonEC2 ec2)
     throws JAXBException, SAXException, IOException,
-           TransformerException, ParserConfigurationException {
+    TransformerException, ParserConfigurationException {
 
     initialize();
     List<InstanceData> instList = getAllInstances(ec2);
@@ -200,7 +200,8 @@ public class AWSResourceMonitor {
   }
 
   /**
-   * Go through the list of instances and assess that they don't violate the policy
+   * Go through the list of instances and assess that they don't violate the policy.
+   *
    * @param instList list of instances
    */
   public void assessInstances(List<InstanceData> instList) {
@@ -209,7 +210,9 @@ public class AWSResourceMonitor {
 
       final String name = metaData.name;
 
-      if (!name.matches(namePattern)) { continue;  }
+      if (!name.matches(namePattern)) {
+        continue;
+      }
 
       boolean failure = false;
 
@@ -218,8 +221,8 @@ public class AWSResourceMonitor {
 
         Date launchTime = metaData.getLaunchTime();
 
-        if ((!"Permanent".equals(metaData.lifecycle)) &&
-            beenRunningTooLong(launchTime, new Date())) {
+        if ((!"Permanent".equals(metaData.lifecycle))
+            && beenRunningTooLong(launchTime, new Date())) {
           // been running too long
           String errMsg = "has been running longer than the allowable time.";
           addResult(getFailingTestCase(name, "RunningTime", errMsg));
@@ -266,10 +269,10 @@ public class AWSResourceMonitor {
           failure |= true;
         }
 
-        if(!metaData.getRegion().equals("us-east-1")) {
-            String errMsg = "Found instance outside of US_EAST1 region";
-            addResult(getFailingTestCase(name, "WrongRegion", errMsg));
-            failure |= true;
+        if (!metaData.getRegion().equals("us-east-1")) {
+          String errMsg = "Found instance outside of US_EAST1 region";
+          addResult(getFailingTestCase(name, "WrongRegion", errMsg));
+          failure |= true;
         }
 
       }
@@ -282,7 +285,8 @@ public class AWSResourceMonitor {
   }
 
   /**
-   * Get all instances in US_EAST_1 and US_WEST_1
+   * Get all instances in US_EAST_1 and US_WEST_1.
+   *
    * @param ec2 ec2 API object
    * @return list of instance proxy objects
    */
@@ -293,21 +297,25 @@ public class AWSResourceMonitor {
 
     for (Regions reg : Regions.values()) {
       String regName = reg.getName();
-      if ( regName.equals("us-gov-west-1")) continue;
-      if ( regName.equals("cn-north-1")) continue;
+      if (regName.equals("us-gov-west-1")) {
+        continue;
+      }
+      if (regName.equals("cn-north-1")) {
+        continue;
+      }
       collectRegionInstances(ec2, instList, reg);
     }
-
 
 
     return instList;
   }
 
   /**
-   * Get all instances in the region
-   * @param ec2 ec2 object
+   * Get all instances in the region.
+   *
+   * @param ec2      ec2 object
    * @param instList instance list
-   * @param region region
+   * @param region   region
    */
   public void collectRegionInstances(AmazonEC2 ec2, List<InstanceData> instList, Regions region) {
     ec2.setRegion(Region.getRegion(region));
@@ -329,9 +337,10 @@ public class AWSResourceMonitor {
 
 
   /**
-   * Check if instance been running to long
+   * Check if instance been running to long.
+   *
    * @param juLaunchTime instance launch time
-   * @param now current time
+   * @param now          current time
    * @return true if instance is overdue
    */
   public boolean beenRunningTooLong(Date juLaunchTime, Date now) {
@@ -341,7 +350,8 @@ public class AWSResourceMonitor {
   }
 
   /**
-   * Add testcase to the list of results
+   * Add testcase to the list of results.
+   *
    * @param testCase test case to add
    */
   public void addResult(Testcase testCase) {
@@ -355,7 +365,8 @@ public class AWSResourceMonitor {
 
 
   /**
-   * Getter for testResults
+   * Getter for testResults.
+   *
    * @return accumulated test results
    */
   public List<Testcase> getTestResults() {
@@ -363,14 +374,12 @@ public class AWSResourceMonitor {
   }
 
   /**
-   * Verify whether JUnit output is desired and write it to the file if so
-   * @throws JAXBException
-   * @throws SAXException
-   * @throws IOException
-   * @throws TransformerException
-   * @throws ParserConfigurationException
+   * Verify whether JUnit output is desired and write it to the file.
+   *
    */
-  public void writeJunitReport() throws JAXBException, SAXException, IOException, TransformerException, ParserConfigurationException {
+  public void writeJunitReport()
+    throws JAXBException, SAXException, IOException,
+    TransformerException, ParserConfigurationException {
     if (jUnitFormatReportPath != null) {
 
       String xmlReport = outputJunitReportFormat();
@@ -381,7 +390,8 @@ public class AWSResourceMonitor {
   }
 
   /**
-   * Get file object for writing report file
+   * Get file object for writing report file.
+   *
    * @return report file obj
    */
   public File getJunitReportFile() {
@@ -400,16 +410,20 @@ public class AWSResourceMonitor {
   }
 
   /**
-   * This method creates a String output in the format of JUnit Report XML. The format will be similar to the following:
+   * This method creates a String output in the format of JUnit Report XML.
+   * <p/>
+   * The format will be similar to the following:
    * <?xml version="1.0" encoding="UTF-8"?>
    * <testsuite failures="4" tests="4">
-   *    <testcase name="passedInstanceName" classname="classname">
-   *    <testcase name="failedInstanceName" classname="classname">
-   *      <failure message="....."/>
+   * <testcase name="passedInstanceName" classname="classname"/>
+   * <testcase name="failedInstanceName" classname="classname"/>
+   * <failure message="....."/>
    *
    * @return Junit report as string
    */
-  public String outputJunitReportFormat() throws JAXBException, SAXException, TransformerException, ParserConfigurationException {
+  public String outputJunitReportFormat()
+    throws JAXBException, SAXException,
+    TransformerException, ParserConfigurationException {
 
     Marshaller ms = Util.createMarshaller(Schemas.JUNIT_SCHEMA, Testsuites.class);
     StringWriter sw = new StringWriter();

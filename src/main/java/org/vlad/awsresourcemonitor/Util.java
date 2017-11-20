@@ -1,28 +1,22 @@
 /**
  *
- * Project: GreySpark Core
- * (c) 2015 FourV Systems, LLC.
- * Unpublished-rights reserved under the copyrights laws of the United States.
- * All use of this commercial software is subject to the terms and conditions of
- * the manufacturer's End User License Agreement.
+ * Copyright 2017 Vlad Korolev
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * Manufacturer is:
- * FourV Systems, LLC, 8 Market Place,  Baltimore, MD 21202.
- *
- */
+ **/
 
 package org.vlad.awsresourcemonitor;
 
 
 import org.xml.sax.SAXException;
 
-import java.net.URL;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import java.net.URL;
 
 /**
  * Various utility methods to make working with JAXB bit easier

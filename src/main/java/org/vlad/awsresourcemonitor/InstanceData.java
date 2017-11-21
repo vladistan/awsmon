@@ -37,17 +37,23 @@ public class InstanceData {
   public String owner;
   /** Charge line */
   public String chargeLine;
+  /** Environment */
+  public String environment;
+
 
   /**
    * List of errors found while processing instance tags
    */
   public List<String> tagValueErrors = new ArrayList<String>();
   private Date launchTime;
-  final private Set<String> AllowedLifeCycleValues = new HashSet<String>();
-  final private Set<String> AllowedProjectValues = new HashSet<String>();
-  final private Set<String> AllowedServiceValues = new HashSet<String>();
-  final private Set<String> AllowedOwnerValues = new HashSet<String>();
-  final private Set<String> AllowChargeLineValues = new HashSet<String>();
+  final private Set<String> AllowedLifeCycleValues = new HashSet<>();
+  final private Set<String> AllowedProjectValues = new HashSet<>();
+  final private Set<String> AllowedServiceValues = new HashSet<>();
+  final private Set<String> AllowedOwnerValues = new HashSet<>();
+  final private Set<String> AllowedChargeLineValues = new HashSet<>();
+  final private Set<String> AllowedEnvironmentValues = new HashSet<>();
+  final private Set<String> AllowedTag = new HashSet<>();
+
   private String region;
 
   /**
@@ -70,16 +76,30 @@ public class InstanceData {
     AllowedServiceValues.add("Build");
     AllowedServiceValues.add("Analytics");
     AllowedServiceValues.add("Authentication");
+    AllowedServiceValues.add("Auth");
     AllowedServiceValues.add("Microservices");
 
     AllowedOwnerValues.add("vlad@myorg.org");
     AllowedOwnerValues.add("bob@myorg.org");
     AllowedOwnerValues.add("greg@myorg.org");
 
-    AllowChargeLineValues.add("InternalDevops");
-    AllowChargeLineValues.add("InternalDev");
-    AllowChargeLineValues.add("InternalQA");
-    AllowChargeLineValues.add("AP");
+    AllowedChargeLineValues.add("InternalDevops");
+    AllowedChargeLineValues.add("InternalDev");
+    AllowedChargeLineValues.add("InternalQA");
+    AllowedChargeLineValues.add("Cust1");
+
+    AllowedEnvironmentValues.add("Common");
+    AllowedEnvironmentValues.add("Admin");
+    AllowedEnvironmentValues.add("Iso");
+    AllowedEnvironmentValues.add("Dev");
+    AllowedEnvironmentValues.add("Test");
+    AllowedEnvironmentValues.add("Union");
+    AllowedEnvironmentValues.add("Staging");
+    AllowedEnvironmentValues.add("Prod");
+
+    AllowedTag.add("aws:autoscaling:groupName");
+    AllowedTag.add("aws:cloudformation:logical-id");
+    AllowedTag.add("VPCStackPrefix");
 
     final String stateName = inst.getState().getName();
     running = "running".equals(stateName);
@@ -114,13 +134,33 @@ public class InstanceData {
         addOwnerTag(tagValue);
       } else if ("ChargeLine".equals(tagKey)) {
         addChargeLineTag(tagValue);
+      } else if ("Environment".equals(tagKey)) {
+        addEnvironmentTag(tagValue);
+      } else {
+        checkAllowedTag(tagKey);
       }
 
     }
   }
 
+  private void checkAllowedTag(String tagKey) {
+    if(!AllowedTag.contains(tagKey)) {
+      tagValueErrors.add("Invalid tag key '" + tagKey + "'");
+    }
+
+
+  }
+
+  private void addEnvironmentTag(String tagValue) {
+    if(AllowedEnvironmentValues.contains(tagValue)) {
+      environment = tagValue;
+    } else {
+      tagValueErrors.add("Invalid Environment tag value '" + tagValue + "'");
+    }
+  }
+
   private void addChargeLineTag(String tagValue) {
-    if (AllowChargeLineValues.contains(tagValue)) {
+    if (AllowedChargeLineValues.contains(tagValue)) {
       chargeLine = tagValue;
     } else {
       tagValueErrors.add("Invalid ChargeLine tag value '" + tagValue + "'");

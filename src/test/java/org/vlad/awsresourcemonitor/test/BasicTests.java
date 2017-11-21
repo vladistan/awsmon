@@ -79,25 +79,28 @@ public class BasicTests {
     TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
     TestUtil.addInstanceTag(inst, "Owner", "bob@myorg.org");
     TestUtil.addInstanceTag(inst, "Service", "VPN");
+    TestUtil.addInstanceTag(inst, "Environment", "Admin");
     TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
 
 
 
     inst = TestUtil.getMockInstance("terminated", "myOrg-app1Services SSO Server", 1);
-    TestUtil.addInstanceTag(inst, "Service", "VPN");
+    TestUtil.addInstanceTag(inst, "Service", "Auth");
     TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
     TestUtil.addInstanceTag(inst, "Owner", "vlad@myorg.org");
     TestUtil.addInstanceTag(inst, "Lifecycle", "OnDemand");
+    TestUtil.addInstanceTag(inst, "Environment", "Admin");
     TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
 
     list1.add(inst);
 
     inst = TestUtil.getMockInstance("running", "myOrg-app2Services SSO Server", 4);
-    TestUtil.addInstanceTag(inst, "Service", "VPN");
+    TestUtil.addInstanceTag(inst, "Service", "Auth");
     TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
     TestUtil.addInstanceTag(inst, "Owner", "vlad@myorg.org");
     TestUtil.addInstanceTag(inst, "Lifecycle", "OnDemand");
     TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
+    TestUtil.addInstanceTag(inst, "Environment", "Invalid");
     list2.add(inst);
 
     inst = TestUtil.getMockInstance("running", "myOrg-app2Services WebApp", 3);
@@ -106,6 +109,10 @@ public class BasicTests {
     TestUtil.addInstanceTag(inst, "Owner", "vlad@myorg.org");
     TestUtil.addInstanceTag(inst, "Lifecycle", "Spot");
     TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
+
+    TestUtil.addInstanceTag(inst, "aws:autoscaling:groupName", "asg-1");
+    TestUtil.addInstanceTag(inst, "aws:cloudformation:logical-id", "55555");
+    TestUtil.addInstanceTag(inst, "VPCStackPrefix", "xx");
     list2.add(inst);
 
     mon.run(ec2);

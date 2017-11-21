@@ -1,15 +1,12 @@
-package org.vlad.awsresourcemonitor.test; /**
+/**
  *
- * Project: GreySpark Core
- * (c) 2015 FourV Systems, LLC.
- * Unpublished-rights reserved under the copyrights laws of the United States.
- * All use of this commercial software is subject to the terms and conditions of
- * the manufacturer's End User License Agreement.
+ * Copyright 2017 Vlad Korolev
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * Manufacturer is:
- * FourV Systems, LLC, 8 Market Place,  Baltimore, MD 21202.
- *
- */
+ **/
+
+package org.vlad.awsresourcemonitor.test;
 
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceState;

@@ -21,9 +21,9 @@ import java.net.URL;
 /**
  * Various utility methods to make working with JAXB bit easier
  */
-public final class Util {
+public final class JaxbUtil {
 
-  private Util() {
+  private JaxbUtil() {
 
   }
 

@@ -71,7 +71,7 @@ public class AWSResourceMonitor {
   private Period maxAllowedHoursToRun = new Period(12, 0, 0, 0);
 
 
-  private List<Testcase> testResults = new ArrayList<Testcase>();
+  private List<Testcase> testResults = new ArrayList<>();
   private int numFailing = 0;
 
 
@@ -80,8 +80,7 @@ public class AWSResourceMonitor {
    *
    * @param args command line arguments
    */
-  public static void main(String[] args) throws JAXBException, SAXException, IOException,
-    TransformerException, ParserConfigurationException {
+  public static void main(String[] args) {
 
     final AWSResourceMonitor mon = new AWSResourceMonitor();
     final AmazonEC2Client ec2 = new AmazonEC2Client(new DefaultAWSCredentialsProviderChain());
@@ -110,11 +109,21 @@ public class AWSResourceMonitor {
       //CHECKSTYLE:OFF
       System.out.println(exc.getMessage());
       System.out.println("Use AWSResource -help ");
+      System.exit(2);
       //CHECKSTYLE:ON
 
     }
 
-    mon.run(ec2);
+    try {
+      mon.run(ec2);
+    } catch (IOException e) {
+      System.out.println(e.getLocalizedMessage());
+      e.printStackTrace();
+    } catch (XmlException e) {
+      System.out.println(e.getLocalizedMessage());
+      e.printStackTrace();
+    }
+
   }
 
   /**
@@ -152,22 +161,22 @@ public class AWSResourceMonitor {
   /**
    * Set path to JUnit output.
    *
-   * @param jUnitFormatReportPath - directory to place output in
+   * @param reportPath - directory to place output in
    */
-  public void setjUnitFormatReportPath(String jUnitFormatReportPath) {
-    if (jUnitFormatReportPath != null) {
-      this.jUnitFormatReportPath = jUnitFormatReportPath;
+  public void setjUnitFormatReportPath(String reportPath) {
+    if (reportPath != null) {
+      this.jUnitFormatReportPath = reportPath;
     }
   }
 
   /**
    * Set maximum allowed time to run.
    *
-   * @param maxRunningTimeInHours - maximum allowed hours
+   * @param maxTime - maximum allowed hours
    */
-  public void setMaxAllowedHoursToRun(String maxRunningTimeInHours) {
-    if (maxRunningTimeInHours != null) {
-      maxAllowedHoursToRun = new Period(Integer.parseInt(maxRunningTimeInHours), 0, 0, 0);
+  public void setMaxAllowedHoursToRun(String maxTime) {
+    if (maxTime != null) {
+      maxAllowedHoursToRun = new Period(Integer.parseInt(maxTime), 0, 0, 0);
     }
   }
 
@@ -186,16 +195,13 @@ public class AWSResourceMonitor {
    * Run resource monitoring job.
    *
    * @param ec2 reference to EC2 API object
-   *
    */
-  public void run(AmazonEC2 ec2)
-    throws JAXBException, SAXException, IOException,
-    TransformerException, ParserConfigurationException {
+  public void run(AmazonEC2 ec2) throws IOException, XmlException {
 
-    initialize();
-    List<InstanceData> instList = getAllInstances(ec2);
-    assessInstances(instList);
-    writeJunitReport();
+    this.initialize();
+    List<InstanceData> instList = this.getAllInstances(ec2);
+    this.assessInstances(instList);
+    this.writeJunitReport();
 
   }
 
@@ -222,14 +228,14 @@ public class AWSResourceMonitor {
         Date launchTime = metaData.getLaunchTime();
 
         if ((!"Permanent".equals(metaData.lifecycle))
-            && beenRunningTooLong(launchTime, new Date())) {
+          && beenRunningTooLong(launchTime, new Date())) {
           // been running too long
           String errMsg = "has been running longer than the allowable time.";
           addResult(getFailingTestCase(name, "RunningTime", errMsg));
           failure |= true;
         }
 
-        if (metaData.tagValueErrors.size() != 0) {
+        if (!metaData.tagValueErrors.isEmpty()) {
           String errMsg = "Tag Errors Detected :";
           for (String msg : metaData.tagValueErrors) {
             errMsg += " [" + msg + "] ";
@@ -292,7 +298,7 @@ public class AWSResourceMonitor {
    */
   public List<InstanceData> getAllInstances(AmazonEC2 ec2) {
     // Find all running EC2 instances that match the regular expression
-    List<InstanceData> instList = new ArrayList<InstanceData>(1000);
+    List<InstanceData> instList = new ArrayList<>(1000);
 
 
     for (Regions reg : Regions.values()) {
@@ -328,9 +334,9 @@ public class AWSResourceMonitor {
     // loop through each running resource
     for (Reservation reservation : reservations) {
       for (Instance instance : reservation.getInstances()) {
-        InstanceData iData = new InstanceData(instance);
-        iData.setRegion(region.getName());
-        instList.add(iData);
+        InstanceData data = new InstanceData(instance);
+        data.setRegion(region.getName());
+        instList.add(data);
       }
     }
   }
@@ -370,19 +376,21 @@ public class AWSResourceMonitor {
    * @return accumulated test results
    */
   public List<Testcase> getTestResults() {
-    return testResults;
+    return new ArrayList<Testcase>(testResults);
   }
 
   /**
    * Verify whether JUnit output is desired and write it to the file.
-   *
    */
-  public void writeJunitReport()
-    throws JAXBException, SAXException, IOException,
-    TransformerException, ParserConfigurationException {
+  public void writeJunitReport() throws IOException, XmlException {
     if (jUnitFormatReportPath != null) {
 
-      String xmlReport = outputJunitReportFormat();
+      String xmlReport = null;
+      try {
+        xmlReport = outputJunitReportFormat();
+      } catch (JAXBException | SAXException | TransformerException | ParserConfigurationException e) {
+        throw new XmlException(e);
+      }
 
       FileUtils.writeStringToFile(getJunitReportFile(), xmlReport);
 
@@ -425,9 +433,6 @@ public class AWSResourceMonitor {
     throws JAXBException, SAXException,
     TransformerException, ParserConfigurationException {
 
-    Marshaller ms = Util.createMarshaller(Schemas.JUNIT_SCHEMA, Testsuites.class);
-    StringWriter sw = new StringWriter();
-
     Testsuite runningTimeSuite = of.createTestsuite();
     runningTimeSuite.setName("AwsResources");
     runningTimeSuite.setFailures(String.valueOf(numFailing));
@@ -441,8 +446,13 @@ public class AWSResourceMonitor {
       runningTimeSuite.getTestcase().add(pass);
     }
 
-    ms.marshal(report, sw);
+    return getXml(report);
+  }
 
+  private String getXml(Testsuites report) throws JAXBException, SAXException {
+    Marshaller ms = JaxbUtil.createMarshaller(Schemas.JUNIT_SCHEMA, Testsuites.class);
+    StringWriter sw = new StringWriter();
+    ms.marshal(report, sw);
     return sw.toString();
   }
 

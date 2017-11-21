@@ -14,7 +14,7 @@ package org.vlad.awsresourcemonitor;
 public class VersionInfo {
 
   /**
-   * Get full version string
+   * Get full version string.
    * @return version string
    */
   public static String getVersionString()
@@ -28,7 +28,7 @@ public class VersionInfo {
   }
 
   /**
-   * Get Short version string
+   * Get Short version string.
    * @return short version string
    */
   public static String getShortVersionString() {
@@ -42,7 +42,7 @@ public class VersionInfo {
 
 
   /**
-   * Display version
+   * Display version.
    */
   public static void displayVersion() {
 
@@ -53,7 +53,7 @@ public class VersionInfo {
   }
 
   /**
-   * Display build information
+   * Display build information.
    */
   public static void displayBuildInfo() {
 
@@ -71,7 +71,7 @@ public class VersionInfo {
   }
 
   /**
-   * Get version numbers as array of components
+   * Get version numbers as array of components.
    * @return version numbers
      */
   public static int[] getVersionComponents() {

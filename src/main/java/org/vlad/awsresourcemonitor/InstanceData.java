@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Proxy object for EC2 instance data
+ * Proxy object for EC2 instance data.
  */
 public class InstanceData {
 
@@ -51,7 +51,7 @@ public class InstanceData {
   private String region;
 
   /**
-   * Initialize proxy object
+   * Initialize proxy object.
    * @param inst  - ec2 api instance
    */
   public InstanceData(final Instance inst) {
@@ -164,7 +164,8 @@ public class InstanceData {
 
 
   /**
-   * Getter for instance running state
+   * Getter for instance running state.
+   *
    * @return  true if instance is currently running
    */
   public final boolean isRunning() {
@@ -172,7 +173,8 @@ public class InstanceData {
   }
 
   /**
-   * Getter for launch time
+   * Getter for launch time.
+   *
    * @return launch time
    */
   public final Date getLaunchTime() {
@@ -183,7 +185,8 @@ public class InstanceData {
   }
 
   /**
-   * Getter for region
+   * Getter for region.
+   *
    * @return region
    */
   public String getRegion() {
@@ -191,7 +194,8 @@ public class InstanceData {
   }
 
   /**
-   * Setter for region
+   * Setter for region.
+   *
    * @param region region
    */
   public void setRegion(String region)

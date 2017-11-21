@@ -1,35 +1,30 @@
-package org.vlad.awsresourcemonitor.test; /**
+/**
  *
- * Project: GreySpark Core
- * (c) 2015 FourV Systems, LLC.
- * Unpublished-rights reserved under the copyrights laws of the United States.
- * All use of this commercial software is subject to the terms and conditions of
- * the manufacturer's End User License Agreement.
+ * Copyright 2017 Vlad Korolev
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * Manufacturer is:
- * FourV Systems, LLC, 8 Market Place,  Baltimore, MD 21202.
- *
- */
+ **/
 
-import org.vlad.awsresourcemonitor.Schemas;
-import org.vlad.awsresourcemonitor.Util;
+package org.vlad.awsresourcemonitor.test;
+
 import com.jaxb.junit.ObjectFactory;
 import com.jaxb.junit.Testcase;
 import com.jaxb.junit.Testsuite;
 import com.jaxb.junit.Testsuites;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.vlad.awsresourcemonitor.Schemas;
+import org.vlad.awsresourcemonitor.JaxbUtil;
 import org.xml.sax.SAXException;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,7 +42,7 @@ public class XmlWriter {
   @Test
   public void writeXMLFile() throws JAXBException, SAXException, IOException, URISyntaxException {
 
-    ms = Util.createMarshaller(Schemas.JUNIT_SCHEMA, Testsuites.class);
+    ms = JaxbUtil.createMarshaller(Schemas.JUNIT_SCHEMA, Testsuites.class);
     of = new ObjectFactory();
 
     File reportOutput = testFolder.newFile();

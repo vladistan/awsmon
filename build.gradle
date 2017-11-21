@@ -46,8 +46,8 @@ dependencies {
   jaxb 'javax.xml.bind:jaxb-api:2.2.7'
 }
 
+
 configurations.all {
-//   exclude group: 'org.slf4j', module: 'slf4j-log4j12'
      exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
 

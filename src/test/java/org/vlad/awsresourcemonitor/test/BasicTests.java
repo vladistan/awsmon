@@ -1,15 +1,10 @@
 /**
  *
- * Project: App1 Core
- * (c) 2015 FourV Systems, LLC.
- * Unpublished-rights reserved under the copyrights laws of the United States.
- * All use of this commercial software is subject to the terms and conditions of
- * the manufacturer's End User License Agreement.
+ * Copyright 2017 Vlad Korolev
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * Manufacturer is:
- * FourV Systems, LLC, 8 Market Place,  Baltimore, MD 21202.
- *
- */
+ **/
 package org.vlad.awsresourcemonitor.test;
 
 import com.amazonaws.regions.Region;
@@ -26,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.vlad.awsresourcemonitor.AWSResourceMonitor;
 import org.vlad.awsresourcemonitor.InstanceData;
+import org.vlad.awsresourcemonitor.XmlException;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
@@ -50,7 +46,7 @@ public class BasicTests {
   public TemporaryFolder testFolder = new TemporaryFolder();
 
   @Test
-  public void shouldGenerateCorrectReportGivenMockedEc2() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException, URISyntaxException {
+  public void shouldGenerateCorrectReportGivenMockedEc2() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException, URISyntaxException, XmlException {
     AWSResourceMonitor mon = new AWSResourceMonitor();
 
     mon.setjUnitFormatReportPath(testFolder.getRoot().toPath().toString());
@@ -123,7 +119,7 @@ public class BasicTests {
   }
 
   @Test
-  public void shouldNotifyAboutMissingTagsInTheReport() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException, URISyntaxException {
+  public void shouldNotifyAboutMissingTagsInTheReport() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException, URISyntaxException, XmlException {
     AWSResourceMonitor mon = new AWSResourceMonitor();
 
     mon.setjUnitFormatReportPath(testFolder.getRoot().toPath().toString());
@@ -247,7 +243,7 @@ public class BasicTests {
 
 
   @Test
-  public void shouldNotifyAboutIncorectValueForLifecycleTag() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException, URISyntaxException {
+  public void shouldNotifyAboutIncorectValueForLifecycleTag() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException, URISyntaxException, XmlException {
     AWSResourceMonitor mon = new AWSResourceMonitor();
 
     mon.setjUnitFormatReportPath(testFolder.getRoot().toPath().toString());
@@ -298,7 +294,7 @@ public class BasicTests {
   }
 
   @Test
-  public void shouldNotFlagLongRunningInstancesWithLifeCyclePermanent() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException {
+  public void shouldNotFlagLongRunningInstancesWithLifeCyclePermanent() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException, XmlException {
 
     AWSResourceMonitor mon = new AWSResourceMonitor();
     mon.setNamePattern("myOrg.*");
@@ -346,7 +342,7 @@ public class BasicTests {
 
 
   @Test
-  public void weCanWriteBasicXMLReport() throws JAXBException, SAXException, IOException, TransformerException, ParserConfigurationException, URISyntaxException {
+  public void weCanWriteBasicXMLReport() throws JAXBException, SAXException, IOException, TransformerException, ParserConfigurationException, URISyntaxException, XmlException {
 
     AWSResourceMonitor mon = new AWSResourceMonitor();
     final String message = "Instance '%s', has been running longer than the allowable time.";

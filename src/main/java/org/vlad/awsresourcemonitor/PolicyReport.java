@@ -31,6 +31,12 @@ import java.util.List;
 public class PolicyReport {
 
   static ObjectFactory of = new ObjectFactory();
+  private final String reportPath;
+
+  public PolicyReport(String reportPath) {
+
+    this.reportPath = reportPath;
+  }
 
   /**
    * This method creates a String output in the format of JUnit Report XML.
@@ -46,7 +52,7 @@ public class PolicyReport {
    * @param numFailing
    * @param testResults
    */
-  public static String outputJunitReportFormat(int numFailing, List<Testcase> testResults)
+  public String outputJunitReportFormat(int numFailing, List<Testcase> testResults)
     throws JAXBException, SAXException,
     TransformerException, ParserConfigurationException {
 
@@ -63,8 +69,7 @@ public class PolicyReport {
       runningTimeSuite.getTestcase().add(pass);
     }
 
-    PolicyReport policyReport = new PolicyReport();
-    return policyReport.getXml(report);
+    return getXml(report);
 
   }
 
@@ -72,15 +77,14 @@ public class PolicyReport {
    * Get file object for writing report file.
    *
    * @return report file obj
-   * @param jUnitFormatReportPath
    */
-  public static File getJunitReportFile(String jUnitFormatReportPath) {
+  public File getJunitReportFile() {
     // if the directory does not exist, create it
-    File reportDir = new File(jUnitFormatReportPath);
+    File reportDir = new File(this.reportPath);
     if (!reportDir.exists()) {
       reportDir.mkdir();
     }
-    return new File(jUnitFormatReportPath + "AWSResourceMonitorReport.xml");
+    return new File(this.reportPath + "AWSResourceMonitorReport.xml");
   }
 
   /**
@@ -89,7 +93,8 @@ public class PolicyReport {
    * @param numFailing
    * @param testResults
    */
-  public static void writeJunitReport(String jUnitFormatReportPath, int numFailing, List<Testcase> testResults) throws IOException, XmlException {
+  public void writeJunitReport(String jUnitFormatReportPath, int numFailing, List<Testcase> testResults) throws IOException, XmlException {
+
     if (jUnitFormatReportPath != null) {
 
       String xmlReport = null;
@@ -99,7 +104,7 @@ public class PolicyReport {
         throw new XmlException(e);
       }
 
-      FileUtils.writeStringToFile(getJunitReportFile(jUnitFormatReportPath), xmlReport);
+      FileUtils.writeStringToFile(getJunitReportFile(), xmlReport);
 
     }
   }

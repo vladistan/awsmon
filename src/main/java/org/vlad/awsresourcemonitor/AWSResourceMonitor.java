@@ -62,6 +62,7 @@ public class AWSResourceMonitor {
 
   public List<Testcase> testResults = new ArrayList<>();
   public int numFailing = 0;
+  private PolicyReport pReport;
 
 
   /**
@@ -190,7 +191,7 @@ public class AWSResourceMonitor {
     this.initialize();
     List<InstanceData> instList = this.getAllInstances(ec2);
     this.assessInstances(instList);
-    PolicyReport.writeJunitReport(this.jUnitFormatReportPath, this.numFailing, this.testResults);
+    pReport.writeJunitReport(this.jUnitFormatReportPath, this.numFailing, this.testResults);
 
   }
 
@@ -373,6 +374,9 @@ public class AWSResourceMonitor {
   private void initialize() {
 
     setMaxAllowedHoursToRun(System.getenv("MaxRunningTimeInHours"));
+
+    pReport = new PolicyReport(jUnitFormatReportPath);
+
 
   }
 

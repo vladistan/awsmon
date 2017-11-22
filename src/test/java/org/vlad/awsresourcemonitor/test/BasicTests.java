@@ -50,7 +50,8 @@ public class BasicTests {
   public void shouldGenerateCorrectReportGivenMockedEc2() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException, URISyntaxException, XmlException {
     AWSResourceMonitor mon = new AWSResourceMonitor();
 
-    mon.setjUnitFormatReportPath(testFolder.getRoot().toPath().toString());
+    String reportPath = testFolder.getRoot().toPath().toString();
+    mon.setjUnitFormatReportPath(reportPath);
     mon.setNamePattern("my.*");
     mon.setMaxAllowedHoursToRun("2");
 
@@ -122,15 +123,18 @@ public class BasicTests {
     verify(ec2, times(9)).describeInstances((DescribeInstancesRequest) anyObject());
     verifyNoMoreInteractions(ec2);
 
+
     File basicSamplereport = TestUtil.getTestResource("testReportRunningInstances.xml");
-    assertThat(PolicyReport.getJunitReportFile(mon.jUnitFormatReportPath)).hasSameContentAs(basicSamplereport);
+    PolicyReport pReport = new PolicyReport(reportPath);
+    assertThat(pReport.getJunitReportFile()).hasSameContentAs(basicSamplereport);
   }
 
   @Test
   public void shouldNotifyAboutMissingTagsInTheReport() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException, URISyntaxException, XmlException {
     AWSResourceMonitor mon = new AWSResourceMonitor();
 
-    mon.setjUnitFormatReportPath(testFolder.getRoot().toPath().toString());
+    String reportPath = testFolder.getRoot().toPath().toString();
+    mon.setjUnitFormatReportPath(reportPath);
     mon.setNamePattern("my.*");
     mon.setMaxAllowedHoursToRun("2");
 
@@ -171,7 +175,10 @@ public class BasicTests {
     mon.run(ec2);
 
     File basicSamplereport = TestUtil.getTestResource("testReportTagsMissing.xml");
-    File tmpFileName = PolicyReport.getJunitReportFile(mon.jUnitFormatReportPath);
+
+    PolicyReport pReport = new PolicyReport(reportPath);
+    File tmpFileName = pReport.getJunitReportFile();
+
     assertThat(tmpFileName).hasSameContentAs(basicSamplereport);
   }
 
@@ -254,7 +261,8 @@ public class BasicTests {
   public void shouldNotifyAboutIncorectValueForLifecycleTag() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException, URISyntaxException, XmlException {
     AWSResourceMonitor mon = new AWSResourceMonitor();
 
-    mon.setjUnitFormatReportPath(testFolder.getRoot().toPath().toString());
+    String reportPath = testFolder.getRoot().toPath().toString();
+    mon.setjUnitFormatReportPath(reportPath);
     mon.setNamePattern("my.*");
     mon.setMaxAllowedHoursToRun("2");
 
@@ -297,7 +305,9 @@ public class BasicTests {
     mon.run(ec2);
 
     File basicSamplereport = TestUtil.getTestResource("testReportInvalidLifeCycleTag.xml");
-    File tmpFileName = PolicyReport.getJunitReportFile(mon.jUnitFormatReportPath);
+    PolicyReport pReport = new PolicyReport(reportPath);
+
+    File tmpFileName = pReport.getJunitReportFile();
     assertThat(tmpFileName).hasSameContentAs(basicSamplereport);
   }
 
@@ -352,10 +362,12 @@ public class BasicTests {
   @Test
   public void weCanWriteBasicXMLReport() throws JAXBException, SAXException, IOException, TransformerException, ParserConfigurationException, URISyntaxException, XmlException {
 
+
     AWSResourceMonitor mon = new AWSResourceMonitor();
     final String message = "Instance '%s', has been running longer than the allowable time.";
 
-    mon.setjUnitFormatReportPath(testFolder.getRoot().toPath().toString());
+    String reportPath = testFolder.getRoot().toPath().toString();
+    mon.setjUnitFormatReportPath(reportPath);
 
     mon.addResult(AWSResourceMonitor.getFailingTestCase("myOrg-app1 Master", "RunningTime",
       "Does not have required tag 'Lifecycle'"));
@@ -368,11 +380,12 @@ public class BasicTests {
     mon.addResult(AWSResourceMonitor.getFailingTestCase("myOrg-app2Services WebApp", "RunningTime",
       String.format(message, "myOrg-app2Services WebApp")));
 
-    PolicyReport.writeJunitReport(mon.jUnitFormatReportPath, mon.numFailing, mon.testResults);
+    PolicyReport pReport = new PolicyReport(reportPath);
+    pReport.writeJunitReport(mon.jUnitFormatReportPath, mon.numFailing, mon.testResults);
 
     File basicSamplereport = TestUtil.getTestResource("testReportBasicTest.xml");
 
-    assertThat(PolicyReport.getJunitReportFile(mon.jUnitFormatReportPath)).hasSameContentAs(basicSamplereport);
+    assertThat(pReport.getJunitReportFile()).hasSameContentAs(basicSamplereport);
 
   }
 

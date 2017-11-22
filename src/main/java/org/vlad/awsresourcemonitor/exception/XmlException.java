@@ -6,7 +6,7 @@
  *
  **/
 
-package org.vlad.awsresourcemonitor;
+package org.vlad.awsresourcemonitor.exception;
 
 /**
  * Generic exception related to XML parsing or generation problem.

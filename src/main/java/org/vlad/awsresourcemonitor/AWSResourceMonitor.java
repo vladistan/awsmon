@@ -25,18 +25,15 @@ import com.jaxb.junit.*;
 import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
+import org.vlad.awsresourcemonitor.exception.XmlException;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -49,8 +46,6 @@ import java.util.List;
  * MaxRunningTimeInHours - The maximum amount of time in hours.
  */
 public class AWSResourceMonitor {
-
-  private static ObjectFactory of = new ObjectFactory();
 
   @Parameter(names = "-help", description = "Print help and exit", help = true)
   private boolean help;
@@ -65,7 +60,7 @@ public class AWSResourceMonitor {
   private String namePattern = ".*";
 
   @Parameter(names = {"-reportPath"}, description = "Junit report path")
-  private String jUnitFormatReportPath;
+  public String jUnitFormatReportPath;
 
   @Parameter(names = {"-maxTime"}, description = "Max allowed time in hours")
   private Period maxAllowedHoursToRun = new Period(12, 0, 0, 0);
@@ -134,7 +129,7 @@ public class AWSResourceMonitor {
    * @return test case
    */
   public static Testcase getPassingTestCase(final String name, String testType) {
-    final Testcase testCase = of.createTestcase();
+    final Testcase testCase = PolicyReport.of.createTestcase();
     testCase.setName(testType);
     testCase.setClassname(name);
     return testCase;
@@ -151,7 +146,7 @@ public class AWSResourceMonitor {
   public static Testcase getFailingTestCase(String instName, String testName, String message) {
 
     Testcase testCase = getPassingTestCase(instName, testName);
-    Failure failure = of.createFailure();
+    Failure failure = PolicyReport.of.createFailure();
     failure.setMessage(message);
     testCase.getFailure().add(failure);
 
@@ -211,10 +206,10 @@ public class AWSResourceMonitor {
    * @param instList list of instances
    */
   public void assessInstances(List<InstanceData> instList) {
-    for (InstanceData metaData : instList) {
+    for (InstanceData objData : instList) {
 
 
-      final String name = metaData.name;
+      final String name = objData.name;
 
       if (!name.matches(namePattern)) {
         continue;
@@ -223,11 +218,11 @@ public class AWSResourceMonitor {
       boolean failure = false;
 
 
-      if (metaData.isRunning()) {
+      if (objData.isRunning()) {
 
-        Date launchTime = metaData.getLaunchTime();
+        Date launchTime = objData.getLaunchTime();
 
-        if ((!"Permanent".equals(metaData.lifecycle))
+        if ((!"Permanent".equals(objData.lifecycle))
           && beenRunningTooLong(launchTime, new Date())) {
           // been running too long
           String errMsg = "has been running longer than the allowable time.";
@@ -235,9 +230,9 @@ public class AWSResourceMonitor {
           failure |= true;
         }
 
-        if (!metaData.tagValueErrors.isEmpty()) {
+        if (!objData.getTagValueErrors().isEmpty()) {
           String errMsg = "Tag Errors Detected :";
-          for (String msg : metaData.tagValueErrors) {
+          for (String msg : objData.getTagValueErrors()) {
             errMsg += " [" + msg + "] ";
           }
 
@@ -245,37 +240,37 @@ public class AWSResourceMonitor {
           failure |= true;
         }
 
-        if (metaData.lifecycle == null) {
+        if (objData.lifecycle == null) {
           String errMsg = "Does not have required tag 'Lifecycle'";
           addResult(getFailingTestCase(name, "MissingTag", errMsg));
           failure |= true;
         }
 
-        if (metaData.project == null) {
+        if (objData.project == null) {
           String errMsg = "Does not have required tag 'Project'";
           addResult(getFailingTestCase(name, "MissingTag", errMsg));
           failure |= true;
         }
 
-        if (metaData.service == null) {
+        if (objData.service == null) {
           String errMsg = "Does not have required tag 'Service'";
           addResult(getFailingTestCase(name, "MissingTag", errMsg));
           failure |= true;
         }
 
-        if (metaData.owner == null) {
+        if (objData.owner == null) {
           String errMsg = "Does not have required tag 'Owner'";
           addResult(getFailingTestCase(name, "MissingTag", errMsg));
           failure |= true;
         }
 
-        if (metaData.chargeLine == null) {
+        if (objData.chargeLine == null) {
           String errMsg = "Does not have required tag 'ChargeLine'";
           addResult(getFailingTestCase(name, "MissingTag", errMsg));
           failure |= true;
         }
 
-        if (!metaData.getRegion().equals("us-east-1")) {
+        if (!objData.getRegion().equals("us-east-1")) {
           String errMsg = "Found instance outside of US_EAST1 region";
           addResult(getFailingTestCase(name, "WrongRegion", errMsg));
           failure |= true;
@@ -300,15 +295,17 @@ public class AWSResourceMonitor {
     // Find all running EC2 instances that match the regular expression
     List<InstanceData> instList = new ArrayList<>(1000);
 
+    Set<String> skipRegions = new HashSet<>();
+
+    skipRegions.add("us-gov-west-1");
+    skipRegions.add("cn-north-1");
 
     for (Regions reg : Regions.values()) {
       String regName = reg.getName();
-      if (regName.equals("us-gov-west-1")) {
+      if (skipRegions.contains(regName)) {
         continue;
       }
-      if (regName.equals("cn-north-1")) {
-        continue;
-      }
+
       collectRegionInstances(ec2, instList, reg);
     }
 
@@ -392,7 +389,7 @@ public class AWSResourceMonitor {
         throw new XmlException(e);
       }
 
-      FileUtils.writeStringToFile(getJunitReportFile(), xmlReport);
+      FileUtils.writeStringToFile(getJunitReportFile(jUnitFormatReportPath), xmlReport);
 
     }
   }
@@ -401,8 +398,9 @@ public class AWSResourceMonitor {
    * Get file object for writing report file.
    *
    * @return report file obj
+   * @param jUnitFormatReportPath
    */
-  public File getJunitReportFile() {
+  public static File getJunitReportFile(String jUnitFormatReportPath) {
     // if the directory does not exist, create it
     File reportDir = new File(jUnitFormatReportPath);
     if (!reportDir.exists()) {
@@ -433,12 +431,12 @@ public class AWSResourceMonitor {
     throws JAXBException, SAXException,
     TransformerException, ParserConfigurationException {
 
-    Testsuite runningTimeSuite = of.createTestsuite();
+    Testsuite runningTimeSuite = PolicyReport.of.createTestsuite();
     runningTimeSuite.setName("AwsResources");
     runningTimeSuite.setFailures(String.valueOf(numFailing));
     runningTimeSuite.setTests(String.valueOf(testResults.size()));
 
-    Testsuites report = of.createTestsuites();
+    Testsuites report = PolicyReport.of.createTestsuites();
 
     report.getTestsuite().add(runningTimeSuite);
 
@@ -446,14 +444,10 @@ public class AWSResourceMonitor {
       runningTimeSuite.getTestcase().add(pass);
     }
 
-    return getXml(report);
+    PolicyReport policyReport = new PolicyReport();
+    return policyReport.getXml(report);
+
   }
 
-  private String getXml(Testsuites report) throws JAXBException, SAXException {
-    Marshaller ms = JaxbUtil.createMarshaller(Schemas.JUNIT_SCHEMA, Testsuites.class);
-    StringWriter sw = new StringWriter();
-    ms.marshal(report, sw);
-    return sw.toString();
-  }
 
 }

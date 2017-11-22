@@ -11,6 +11,7 @@ package org.vlad.awsresourcemonitor;
 
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Tag;
+import org.vlad.awsresourcemonitor.exception.BadObjectAttributeValue;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,20 +39,20 @@ public class InstanceData {
   /** Charge line */
   public String chargeLine;
   /** Environment */
-  public String environment;
+  public ObjectAttribute environment;
 
 
   /**
    * List of errors found while processing instance tags
    */
-  public List<String> tagValueErrors = new ArrayList<String>();
+  private List<String> tagValueErrors = new ArrayList<String>();
   private Date launchTime;
+
   final private Set<String> AllowedLifeCycleValues = new HashSet<>();
   final private Set<String> AllowedProjectValues = new HashSet<>();
   final private Set<String> AllowedServiceValues = new HashSet<>();
   final private Set<String> AllowedOwnerValues = new HashSet<>();
   final private Set<String> AllowedChargeLineValues = new HashSet<>();
-  final private Set<String> AllowedEnvironmentValues = new HashSet<>();
   final private Set<String> AllowedTag = new HashSet<>();
 
   private String region;
@@ -88,14 +89,16 @@ public class InstanceData {
     AllowedChargeLineValues.add("InternalQA");
     AllowedChargeLineValues.add("Cust1");
 
-    AllowedEnvironmentValues.add("Common");
-    AllowedEnvironmentValues.add("Admin");
-    AllowedEnvironmentValues.add("Iso");
-    AllowedEnvironmentValues.add("Dev");
-    AllowedEnvironmentValues.add("Test");
-    AllowedEnvironmentValues.add("Union");
-    AllowedEnvironmentValues.add("Staging");
-    AllowedEnvironmentValues.add("Prod");
+    environment = new ObjectAttribute();
+
+    environment.add_allowed_value("Common");
+    environment.add_allowed_value("Admin");
+    environment.add_allowed_value("Iso");
+    environment.add_allowed_value("Dev");
+    environment.add_allowed_value("Test");
+    environment.add_allowed_value("Union");
+    environment.add_allowed_value("Staging");
+    environment.add_allowed_value("Prod");
 
     AllowedTag.add("aws:autoscaling:groupName");
     AllowedTag.add("aws:cloudformation:logical-id");
@@ -135,7 +138,11 @@ public class InstanceData {
       } else if ("ChargeLine".equals(tagKey)) {
         addChargeLineTag(tagValue);
       } else if ("Environment".equals(tagKey)) {
-        addEnvironmentTag(tagValue);
+        try {
+          addEnvironmentTag(tagValue);
+        } catch (BadObjectAttributeValue badObjectAttributeValue) {
+          tagValueErrors.add(badObjectAttributeValue.getMessage());
+        }
       } else {
         checkAllowedTag(tagKey);
       }
@@ -151,12 +158,8 @@ public class InstanceData {
 
   }
 
-  private void addEnvironmentTag(String tagValue) {
-    if(AllowedEnvironmentValues.contains(tagValue)) {
-      environment = tagValue;
-    } else {
-      tagValueErrors.add("Invalid Environment tag value '" + tagValue + "'");
-    }
+  private void addEnvironmentTag(String tagValue) throws BadObjectAttributeValue {
+    environment.setValue(tagValue);
   }
 
   private void addChargeLineTag(String tagValue) {
@@ -241,5 +244,14 @@ public class InstanceData {
   public void setRegion(String region)
   {
     this.region = region;
+  }
+
+  /**
+   * Getter for tag value errors.
+   *
+   * @return list that contains tag value errors
+   */
+  public List<String> getTagValueErrors() {
+    return tagValueErrors;
   }
 }

@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.vlad.awsresourcemonitor.AWSResourceMonitor;
 import org.vlad.awsresourcemonitor.InstanceData;
-import org.vlad.awsresourcemonitor.XmlException;
+import org.vlad.awsresourcemonitor.exception.XmlException;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
@@ -122,7 +122,7 @@ public class BasicTests {
     verifyNoMoreInteractions(ec2);
 
     File basicSamplereport = TestUtil.getTestResource("testReportRunningInstances.xml");
-    assertThat(mon.getJunitReportFile()).hasSameContentAs(basicSamplereport);
+    assertThat(AWSResourceMonitor.getJunitReportFile(mon.jUnitFormatReportPath)).hasSameContentAs(basicSamplereport);
   }
 
   @Test
@@ -170,7 +170,7 @@ public class BasicTests {
     mon.run(ec2);
 
     File basicSamplereport = TestUtil.getTestResource("testReportTagsMissing.xml");
-    File tmpFileName = mon.getJunitReportFile();
+    File tmpFileName = AWSResourceMonitor.getJunitReportFile(mon.jUnitFormatReportPath);
     assertThat(tmpFileName).hasSameContentAs(basicSamplereport);
   }
 
@@ -296,7 +296,7 @@ public class BasicTests {
     mon.run(ec2);
 
     File basicSamplereport = TestUtil.getTestResource("testReportInvalidLifeCycleTag.xml");
-    File tmpFileName = mon.getJunitReportFile();
+    File tmpFileName = AWSResourceMonitor.getJunitReportFile(mon.jUnitFormatReportPath);
     assertThat(tmpFileName).hasSameContentAs(basicSamplereport);
   }
 
@@ -371,7 +371,7 @@ public class BasicTests {
 
     File basicSamplereport = TestUtil.getTestResource("testReportBasicTest.xml");
 
-    assertThat(mon.getJunitReportFile()).hasSameContentAs(basicSamplereport);
+    assertThat(AWSResourceMonitor.getJunitReportFile(mon.jUnitFormatReportPath)).hasSameContentAs(basicSamplereport);
 
   }
 

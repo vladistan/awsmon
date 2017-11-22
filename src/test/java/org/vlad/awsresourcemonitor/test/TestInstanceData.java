@@ -82,7 +82,7 @@ public class TestInstanceData {
     TestUtil.addInstanceTag(inst, "Project", "bob");
     InstanceData iData = new InstanceData(inst);
 
-    assertThat(iData.tagValueErrors).contains("Invalid Project tag value 'bob'");
+    assertThat(iData.getTagValueErrors()).contains("Invalid Project tag value 'bob'");
 
   }
 
@@ -106,7 +106,7 @@ public class TestInstanceData {
     TestUtil.addInstanceTag(inst, "ChargeLine", "bob");
     InstanceData iData = new InstanceData(inst);
 
-    assertThat(iData.tagValueErrors).contains("Invalid ChargeLine tag value 'bob'");
+    assertThat(iData.getTagValueErrors()).contains("Invalid ChargeLine tag value 'bob'");
 
   }
 
@@ -131,7 +131,7 @@ public class TestInstanceData {
     TestUtil.addInstanceTag(inst, "Service", "bob");
     InstanceData iData = new InstanceData(inst);
 
-    assertThat(iData.tagValueErrors).contains("Invalid Service tag value 'bob'");
+    assertThat(iData.getTagValueErrors()).contains("Invalid Service tag value 'bob'");
 
   }
 
@@ -168,7 +168,7 @@ public class TestInstanceData {
     TestUtil.addInstanceTag(inst, "Owner", "doop@hello.com");
     InstanceData iData = new InstanceData(inst);
 
-    assertThat(iData.tagValueErrors).contains("Invalid Owner tag value 'doop@hello.com'");
+    assertThat(iData.getTagValueErrors()).contains("Invalid Owner tag value 'doop@hello.com'");
 
   }
 
@@ -181,7 +181,7 @@ public class TestInstanceData {
     TestUtil.addInstanceTag(inst, "Lifecycle", "bob");
     InstanceData iData = new InstanceData(inst);
 
-    assertThat(iData.tagValueErrors).contains("Invalid Lifecycle tag value 'bob'");
+    assertThat(iData.getTagValueErrors()).contains("Invalid Lifecycle tag value 'bob'");
 
   }
 
@@ -193,7 +193,7 @@ public class TestInstanceData {
 
     InstanceData iData = new InstanceData(inst);
 
-    assertThat(iData.tagValueErrors).contains("Instance i-333444: 'Name' tag is missing or empty");
+    assertThat(iData.getTagValueErrors()).contains("Instance i-333444: 'Name' tag is missing or empty");
 
   }
 

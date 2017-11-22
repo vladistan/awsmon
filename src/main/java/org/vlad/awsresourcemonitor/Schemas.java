@@ -14,7 +14,7 @@ package org.vlad.awsresourcemonitor;
  */
 public final class Schemas {
 
-  /** Junit 4 XSD schema */
+  /** Junit 4 XSD schema. */
   public static final String JUNIT_SCHEMA = "junit-4.xsd";
 
   private Schemas() {

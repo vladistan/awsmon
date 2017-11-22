@@ -19,8 +19,9 @@ import javax.xml.validation.SchemaFactory;
 import java.net.URL;
 
 /**
- * Various utility methods to make working with JAXB bit easier
+ * Various utility methods to make working with JAXB bit easier.
  */
+
 public final class JaxbUtil {
 
   private JaxbUtil() {
@@ -28,12 +29,10 @@ public final class JaxbUtil {
   }
 
   /**
-   * Create XML marshaller for schema and class
+   * Create XML marshaller for schema and class.
    * @param schema  schema to use
    * @param clazz   class for marshaller
    * @return  marshaller
-   * @throws JAXBException
-   * @throws SAXException
    */
   public static Marshaller createMarshaller(final String schema, final Class<?> clazz)
     throws JAXBException, SAXException {
@@ -41,7 +40,7 @@ public final class JaxbUtil {
   }
 
   /**
-   * Get defaut class loader for current thread
+   * Get defaut class loader for current thread.
    * @return class loader
    */
   public static ClassLoader getDefaultClassLoader() {
@@ -49,13 +48,11 @@ public final class JaxbUtil {
   }
 
   /**
-   * Create marshaller for specified class loader, schema and class
+   * Create marshaller for specified class loader, schema and class.
    * @param cL  class loader to use
    * @param schema schema
    * @param clazz  class
    * @return marshaller
-   * @throws JAXBException
-   * @throws SAXException
    */
   public static Marshaller createMarshaller(final ClassLoader cL, final String schema, final Class<?> clazz)
     throws JAXBException, SAXException {

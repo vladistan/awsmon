@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.vlad.awsresourcemonitor.AWSResourceMonitor;
+import org.vlad.awsresourcemonitor.Ec2InstanceCollection;
 import org.vlad.awsresourcemonitor.InstanceData;
 import org.vlad.awsresourcemonitor.PolicyReport;
 import org.vlad.awsresourcemonitor.exception.XmlException;
@@ -191,6 +192,8 @@ public class BasicTests {
 
     AmazonEC2 ec2 = mock(AmazonEC2.class);
 
+
+
     DescribeInstancesResult result = mock(DescribeInstancesResult.class);
 
     List<Reservation> reservations = new ArrayList<Reservation>();
@@ -209,8 +212,7 @@ public class BasicTests {
     list1.add(inst);
 
 
-    List<InstanceData> list = mon.getAllInstances(ec2);
-
+    List<InstanceData> list = new Ec2InstanceCollection(ec2).getObjList();
     InstanceData instData = list.get(0);
 
     assertThat(instData.getRegion()).isEqualTo("us-east-1");
@@ -245,7 +247,7 @@ public class BasicTests {
     list1.add(inst);
 
 
-    List<InstanceData> list = mon.getAllInstances(ec2);
+    List<InstanceData> list = new Ec2InstanceCollection(ec2).getObjList();
 
     InstanceData instData = list.get(0);
     assertThat(instData.getRegion()).isEqualTo("us-east-1");

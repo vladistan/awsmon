@@ -10,24 +10,21 @@
 package org.vlad.awsresourcemonitor;
 
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
-import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.Instance;
-import com.amazonaws.services.ec2.model.Reservation;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import com.jaxb.junit.*;
+import com.jaxb.junit.Failure;
+import com.jaxb.junit.Testcase;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.vlad.awsresourcemonitor.exception.XmlException;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -189,7 +186,8 @@ public class AWSResourceMonitor {
   public void run(AmazonEC2 ec2) throws IOException, XmlException {
 
     this.initialize();
-    List<InstanceData> instList = this.getAllInstances(ec2);
+    List<InstanceData> instList = new Ec2InstanceCollection(ec2).getObjList();
+
     this.assessInstances(instList);
     pReport.writeJunitReport(this.numFailing, this.testResults);
 
@@ -201,12 +199,14 @@ public class AWSResourceMonitor {
    * @param instList list of instances
    */
   public void assessInstances(List<InstanceData> instList) {
+
+
     for (InstanceData objData : instList) {
 
 
-      final String name = objData.name;
+      final String instName = objData.name;
 
-      if (!name.matches(namePattern)) {
+      if (!instName.matches(namePattern)) {
         continue;
       }
 
@@ -221,7 +221,7 @@ public class AWSResourceMonitor {
           && beenRunningTooLong(launchTime, new Date())) {
           // been running too long
           String errMsg = "has been running longer than the allowable time.";
-          addResult(getFailingTestCase(name, "RunningTime", errMsg));
+          addResult(getFailingTestCase(instName, "RunningTime", errMsg));
           failure |= true;
         }
 
@@ -231,106 +231,39 @@ public class AWSResourceMonitor {
             errMsg += " [" + msg + "] ";
           }
 
-          addResult(getFailingTestCase(name, "InvalidTagValue", errMsg));
+          addResult(getFailingTestCase(instName, "InvalidTagValue", errMsg));
           failure |= true;
         }
 
-        if (objData.lifecycle == null) {
-          String errMsg = "Does not have required tag 'Lifecycle'";
-          addResult(getFailingTestCase(name, "MissingTag", errMsg));
-          failure |= true;
-        }
+        failure |= checkTag(instName, "Lifecycle", objData.lifecycle);
+        failure |= checkTag(instName, "Project", objData.project);
+        failure |= checkTag(instName, "Service", objData.service);
+        failure |= checkTag(instName, "Owner", objData.owner);
+        failure |= checkTag(instName, "ChargeLine", objData.chargeLine);
 
-        if (objData.project == null) {
-          String errMsg = "Does not have required tag 'Project'";
-          addResult(getFailingTestCase(name, "MissingTag", errMsg));
-          failure |= true;
-        }
-
-        if (objData.service == null) {
-          String errMsg = "Does not have required tag 'Service'";
-          addResult(getFailingTestCase(name, "MissingTag", errMsg));
-          failure |= true;
-        }
-
-        if (objData.owner == null) {
-          String errMsg = "Does not have required tag 'Owner'";
-          addResult(getFailingTestCase(name, "MissingTag", errMsg));
-          failure |= true;
-        }
-
-        if (objData.chargeLine == null) {
-          String errMsg = "Does not have required tag 'ChargeLine'";
-          addResult(getFailingTestCase(name, "MissingTag", errMsg));
-          failure |= true;
-        }
 
         if (!objData.getRegion().equals("us-east-1")) {
           String errMsg = "Found instance outside of US_EAST1 region";
-          addResult(getFailingTestCase(name, "WrongRegion", errMsg));
+          addResult(getFailingTestCase(instName, "WrongRegion", errMsg));
           failure |= true;
         }
 
       }
 
       if (!failure) {
-        addResult(getPassingTestCase(name, "RunningTime"));
+        addResult(getPassingTestCase(instName, "RunningTime"));
       }
 
     }
   }
 
-  /**
-   * Get all instances in US_EAST_1 and US_WEST_1.
-   *
-   * @param ec2 ec2 API object
-   * @return list of instance proxy objects
-   */
-  public List<InstanceData> getAllInstances(AmazonEC2 ec2) {
-    // Find all running EC2 instances that match the regular expression
-    List<InstanceData> instList = new ArrayList<>(1000);
-
-    Set<String> skipRegions = new HashSet<>();
-
-    skipRegions.add("us-gov-west-1");
-    skipRegions.add("cn-north-1");
-
-    for (Regions reg : Regions.values()) {
-      String regName = reg.getName();
-      if (skipRegions.contains(regName)) {
-        continue;
-      }
-
-      collectRegionInstances(ec2, instList, reg);
+  private boolean checkTag(String name, String tagName, String tagValue) {
+    if (tagValue == null) {
+      String errMsg = "Does not have required tag '" + tagName + "'";
+      addResult(getFailingTestCase(name, "MissingTag", errMsg));
+      return true;
     }
-
-
-    return instList;
-  }
-
-  /**
-   * Get all instances in the region.
-   *
-   * @param ec2      ec2 object
-   * @param instList instance list
-   * @param region   region
-   */
-  public void collectRegionInstances(AmazonEC2 ec2, List<InstanceData> instList, Regions region) {
-    ec2.setRegion(Region.getRegion(region));
-    // Collect a list of running instances
-    DescribeInstancesRequest request = new DescribeInstancesRequest();
-    DescribeInstancesResult result = ec2.describeInstances(request);
-    List<Reservation> reservations = result.getReservations();
-
-
-    // loop through each running resource
-    for (Reservation reservation : reservations) {
-      for (Instance instance : reservation.getInstances()) {
-        InstanceData data = new InstanceData(instance);
-        data.setRegion(region.getName());
-        instList.add(data);
-      }
-    }
+    return false;
   }
 
 

@@ -1,9 +1,7 @@
 /**
- *
  * Copyright 2017 Vlad Korolev
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
  **/
 
 package org.vlad.awsresourcemonitor;
@@ -89,24 +87,21 @@ public class PolicyReport {
 
   /**
    * Verify whether JUnit output is desired and write it to the file.
-   * @param jUnitFormatReportPath
    * @param numFailing
    * @param testResults
    */
-  public void writeJunitReport(String jUnitFormatReportPath, int numFailing, List<Testcase> testResults) throws IOException, XmlException {
+  public void writeJunitReport(int numFailing, List<Testcase> testResults) throws IOException, XmlException {
 
-    if (jUnitFormatReportPath != null) {
-
-      String xmlReport = null;
-      try {
-        xmlReport = outputJunitReportFormat(numFailing, testResults);
-      } catch (JAXBException | SAXException | TransformerException | ParserConfigurationException e) {
-        throw new XmlException(e);
-      }
-
-      FileUtils.writeStringToFile(getJunitReportFile(), xmlReport);
-
+    String xmlReport = null;
+    try {
+      xmlReport = outputJunitReportFormat(numFailing, testResults);
+    } catch (JAXBException | SAXException | TransformerException | ParserConfigurationException e) {
+      throw new XmlException(e);
     }
+
+    FileUtils.writeStringToFile(getJunitReportFile(), xmlReport);
+
+
   }
 
   public String getXml(Testsuites report) throws JAXBException, SAXException {

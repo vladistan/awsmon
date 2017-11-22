@@ -191,7 +191,7 @@ public class AWSResourceMonitor {
     this.initialize();
     List<InstanceData> instList = this.getAllInstances(ec2);
     this.assessInstances(instList);
-    pReport.writeJunitReport(this.jUnitFormatReportPath, this.numFailing, this.testResults);
+    pReport.writeJunitReport(this.numFailing, this.testResults);
 
   }
 

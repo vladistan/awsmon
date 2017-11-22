@@ -381,7 +381,7 @@ public class BasicTests {
       String.format(message, "myOrg-app2Services WebApp")));
 
     PolicyReport pReport = new PolicyReport(reportPath);
-    pReport.writeJunitReport(mon.jUnitFormatReportPath, mon.numFailing, mon.testResults);
+    pReport.writeJunitReport(mon.numFailing, mon.testResults);
 
     File basicSamplereport = TestUtil.getTestResource("testReportBasicTest.xml");
 

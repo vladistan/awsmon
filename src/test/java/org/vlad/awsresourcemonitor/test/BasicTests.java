@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.vlad.awsresourcemonitor.AWSResourceMonitor;
 import org.vlad.awsresourcemonitor.InstanceData;
+import org.vlad.awsresourcemonitor.PolicyReport;
 import org.vlad.awsresourcemonitor.exception.XmlException;
 import org.xml.sax.SAXException;
 
@@ -122,7 +123,7 @@ public class BasicTests {
     verifyNoMoreInteractions(ec2);
 
     File basicSamplereport = TestUtil.getTestResource("testReportRunningInstances.xml");
-    assertThat(AWSResourceMonitor.getJunitReportFile(mon.jUnitFormatReportPath)).hasSameContentAs(basicSamplereport);
+    assertThat(PolicyReport.getJunitReportFile(mon.jUnitFormatReportPath)).hasSameContentAs(basicSamplereport);
   }
 
   @Test
@@ -170,7 +171,7 @@ public class BasicTests {
     mon.run(ec2);
 
     File basicSamplereport = TestUtil.getTestResource("testReportTagsMissing.xml");
-    File tmpFileName = AWSResourceMonitor.getJunitReportFile(mon.jUnitFormatReportPath);
+    File tmpFileName = PolicyReport.getJunitReportFile(mon.jUnitFormatReportPath);
     assertThat(tmpFileName).hasSameContentAs(basicSamplereport);
   }
 
@@ -296,7 +297,7 @@ public class BasicTests {
     mon.run(ec2);
 
     File basicSamplereport = TestUtil.getTestResource("testReportInvalidLifeCycleTag.xml");
-    File tmpFileName = AWSResourceMonitor.getJunitReportFile(mon.jUnitFormatReportPath);
+    File tmpFileName = PolicyReport.getJunitReportFile(mon.jUnitFormatReportPath);
     assertThat(tmpFileName).hasSameContentAs(basicSamplereport);
   }
 
@@ -367,11 +368,11 @@ public class BasicTests {
     mon.addResult(AWSResourceMonitor.getFailingTestCase("myOrg-app2Services WebApp", "RunningTime",
       String.format(message, "myOrg-app2Services WebApp")));
 
-    mon.writeJunitReport();
+    PolicyReport.writeJunitReport(mon.jUnitFormatReportPath, mon.numFailing, mon.testResults);
 
     File basicSamplereport = TestUtil.getTestResource("testReportBasicTest.xml");
 
-    assertThat(AWSResourceMonitor.getJunitReportFile(mon.jUnitFormatReportPath)).hasSameContentAs(basicSamplereport);
+    assertThat(PolicyReport.getJunitReportFile(mon.jUnitFormatReportPath)).hasSameContentAs(basicSamplereport);
 
   }
 

@@ -22,16 +22,10 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.jaxb.junit.*;
-import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.vlad.awsresourcemonitor.exception.XmlException;
-import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -66,8 +60,8 @@ public class AWSResourceMonitor {
   private Period maxAllowedHoursToRun = new Period(12, 0, 0, 0);
 
 
-  private List<Testcase> testResults = new ArrayList<>();
-  private int numFailing = 0;
+  public List<Testcase> testResults = new ArrayList<>();
+  public int numFailing = 0;
 
 
   /**
@@ -196,7 +190,7 @@ public class AWSResourceMonitor {
     this.initialize();
     List<InstanceData> instList = this.getAllInstances(ec2);
     this.assessInstances(instList);
-    this.writeJunitReport();
+    PolicyReport.writeJunitReport(this.jUnitFormatReportPath, this.numFailing, this.testResults);
 
   }
 
@@ -376,76 +370,9 @@ public class AWSResourceMonitor {
     return new ArrayList<Testcase>(testResults);
   }
 
-  /**
-   * Verify whether JUnit output is desired and write it to the file.
-   */
-  public void writeJunitReport() throws IOException, XmlException {
-    if (jUnitFormatReportPath != null) {
-
-      String xmlReport = null;
-      try {
-        xmlReport = outputJunitReportFormat();
-      } catch (JAXBException | SAXException | TransformerException | ParserConfigurationException e) {
-        throw new XmlException(e);
-      }
-
-      FileUtils.writeStringToFile(getJunitReportFile(jUnitFormatReportPath), xmlReport);
-
-    }
-  }
-
-  /**
-   * Get file object for writing report file.
-   *
-   * @return report file obj
-   * @param jUnitFormatReportPath
-   */
-  public static File getJunitReportFile(String jUnitFormatReportPath) {
-    // if the directory does not exist, create it
-    File reportDir = new File(jUnitFormatReportPath);
-    if (!reportDir.exists()) {
-      reportDir.mkdir();
-    }
-    return new File(jUnitFormatReportPath + "AWSResourceMonitorReport.xml");
-  }
-
   private void initialize() {
 
     setMaxAllowedHoursToRun(System.getenv("MaxRunningTimeInHours"));
-
-  }
-
-  /**
-   * This method creates a String output in the format of JUnit Report XML.
-   * <p/>
-   * The format will be similar to the following:
-   * <?xml version="1.0" encoding="UTF-8"?>
-   * <testsuite failures="4" tests="4">
-   * <testcase name="passedInstanceName" classname="classname"/>
-   * <testcase name="failedInstanceName" classname="classname"/>
-   * <failure message="....."/>
-   *
-   * @return Junit report as string
-   */
-  public String outputJunitReportFormat()
-    throws JAXBException, SAXException,
-    TransformerException, ParserConfigurationException {
-
-    Testsuite runningTimeSuite = PolicyReport.of.createTestsuite();
-    runningTimeSuite.setName("AwsResources");
-    runningTimeSuite.setFailures(String.valueOf(numFailing));
-    runningTimeSuite.setTests(String.valueOf(testResults.size()));
-
-    Testsuites report = PolicyReport.of.createTestsuites();
-
-    report.getTestsuite().add(runningTimeSuite);
-
-    for (Testcase pass : testResults) {
-      runningTimeSuite.getTestcase().add(pass);
-    }
-
-    PolicyReport policyReport = new PolicyReport();
-    return policyReport.getXml(report);
 
   }
 

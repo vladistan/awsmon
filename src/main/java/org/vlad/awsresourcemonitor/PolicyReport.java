@@ -9,12 +9,21 @@
 package org.vlad.awsresourcemonitor;
 
 import com.jaxb.junit.ObjectFactory;
+import com.jaxb.junit.Testcase;
+import com.jaxb.junit.Testsuite;
 import com.jaxb.junit.Testsuites;
+import org.apache.commons.io.FileUtils;
+import org.vlad.awsresourcemonitor.exception.XmlException;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
+import java.util.List;
 
 /**
  * Report describing objects and policy violations.
@@ -22,6 +31,78 @@ import java.io.StringWriter;
 public class PolicyReport {
 
   static ObjectFactory of = new ObjectFactory();
+
+  /**
+   * This method creates a String output in the format of JUnit Report XML.
+   * <p/>
+   * The format will be similar to the following:
+   * <?xml version="1.0" encoding="UTF-8"?>
+   * <testsuite failures="4" tests="4">
+   * <testcase name="passedInstanceName" classname="classname"/>
+   * <testcase name="failedInstanceName" classname="classname"/>
+   * <failure message="....."/>
+   *
+   * @return Junit report as string
+   * @param numFailing
+   * @param testResults
+   */
+  public static String outputJunitReportFormat(int numFailing, List<Testcase> testResults)
+    throws JAXBException, SAXException,
+    TransformerException, ParserConfigurationException {
+
+    Testsuite runningTimeSuite = of.createTestsuite();
+    runningTimeSuite.setName("AwsResources");
+    runningTimeSuite.setFailures(String.valueOf(numFailing));
+    runningTimeSuite.setTests(String.valueOf(testResults.size()));
+
+    Testsuites report = of.createTestsuites();
+
+    report.getTestsuite().add(runningTimeSuite);
+
+    for (Testcase pass : testResults) {
+      runningTimeSuite.getTestcase().add(pass);
+    }
+
+    PolicyReport policyReport = new PolicyReport();
+    return policyReport.getXml(report);
+
+  }
+
+  /**
+   * Get file object for writing report file.
+   *
+   * @return report file obj
+   * @param jUnitFormatReportPath
+   */
+  public static File getJunitReportFile(String jUnitFormatReportPath) {
+    // if the directory does not exist, create it
+    File reportDir = new File(jUnitFormatReportPath);
+    if (!reportDir.exists()) {
+      reportDir.mkdir();
+    }
+    return new File(jUnitFormatReportPath + "AWSResourceMonitorReport.xml");
+  }
+
+  /**
+   * Verify whether JUnit output is desired and write it to the file.
+   * @param jUnitFormatReportPath
+   * @param numFailing
+   * @param testResults
+   */
+  public static void writeJunitReport(String jUnitFormatReportPath, int numFailing, List<Testcase> testResults) throws IOException, XmlException {
+    if (jUnitFormatReportPath != null) {
+
+      String xmlReport = null;
+      try {
+        xmlReport = outputJunitReportFormat(numFailing, testResults);
+      } catch (JAXBException | SAXException | TransformerException | ParserConfigurationException e) {
+        throw new XmlException(e);
+      }
+
+      FileUtils.writeStringToFile(getJunitReportFile(jUnitFormatReportPath), xmlReport);
+
+    }
+  }
 
   public String getXml(Testsuites report) throws JAXBException, SAXException {
     Marshaller ms = JaxbUtil.createMarshaller(Schemas.JUNIT_SCHEMA, Testsuites.class);

@@ -15,7 +15,6 @@ import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import com.jaxb.junit.Failure;
 import com.jaxb.junit.Testcase;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -60,6 +59,7 @@ public class AWSResourceMonitor {
   public List<Testcase> testResults = new ArrayList<>();
   public int numFailing = 0;
   private PolicyReport pReport;
+  private Policy pol;
 
 
   /**
@@ -111,38 +111,6 @@ public class AWSResourceMonitor {
       e.printStackTrace();
     }
 
-  }
-
-  /**
-   * Generate passing test case for report insertion.
-   *
-   * @param name     - instance name
-   * @param testType - test name
-   * @return test case
-   */
-  public static Testcase getPassingTestCase(final String name, String testType) {
-    final Testcase testCase = PolicyReport.of.createTestcase();
-    testCase.setName(testType);
-    testCase.setClassname(name);
-    return testCase;
-  }
-
-  /**
-   * Generate failing testcase for report insertion.
-   *
-   * @param instName - instance name
-   * @param testName - test name
-   * @param message  - error message
-   * @return test case
-   */
-  public static Testcase getFailingTestCase(String instName, String testName, String message) {
-
-    Testcase testCase = getPassingTestCase(instName, testName);
-    Failure failure = PolicyReport.of.createFailure();
-    failure.setMessage(message);
-    testCase.getFailure().add(failure);
-
-    return testCase;
   }
 
   /**
@@ -221,7 +189,7 @@ public class AWSResourceMonitor {
           && beenRunningTooLong(launchTime, new Date())) {
           // been running too long
           String errMsg = "has been running longer than the allowable time.";
-          addResult(getFailingTestCase(instName, "RunningTime", errMsg));
+          addResult(PolicyReport.getFailingTestCase(instName, "RunningTime", errMsg));
           failure |= true;
         }
 
@@ -231,7 +199,7 @@ public class AWSResourceMonitor {
             errMsg += " [" + msg + "] ";
           }
 
-          addResult(getFailingTestCase(instName, "InvalidTagValue", errMsg));
+          addResult(PolicyReport.getFailingTestCase(instName, "InvalidTagValue", errMsg));
           failure |= true;
         }
 
@@ -244,26 +212,17 @@ public class AWSResourceMonitor {
 
         if (!objData.getRegion().equals("us-east-1")) {
           String errMsg = "Found instance outside of US_EAST1 region";
-          addResult(getFailingTestCase(instName, "WrongRegion", errMsg));
+          addResult(PolicyReport.getFailingTestCase(instName, "WrongRegion", errMsg));
           failure |= true;
         }
 
       }
 
       if (!failure) {
-        addResult(getPassingTestCase(instName, "RunningTime"));
+        addResult(PolicyReport.getPassingTestCase(instName, "RunningTime"));
       }
 
     }
-  }
-
-  private boolean checkTag(String name, String tagName, String tagValue) {
-    if (tagValue == null) {
-      String errMsg = "Does not have required tag '" + tagName + "'";
-      addResult(getFailingTestCase(name, "MissingTag", errMsg));
-      return true;
-    }
-    return false;
   }
 
 
@@ -295,21 +254,29 @@ public class AWSResourceMonitor {
   }
 
 
+  private boolean checkTag(String name, String tagName, String tagValue) {
+    if (tagValue == null) {
+      String errMsg = "Does not have required tag '" + tagName + "'";
+      addResult(PolicyReport.getFailingTestCase(name, "MissingTag", errMsg));
+      return true;
+    }
+    return false;
+  }
+
   /**
    * Getter for testResults.
    *
-   * @return accumulated test results
    */
   public List<Testcase> getTestResults() {
-    return new ArrayList<Testcase>(testResults);
+    return new ArrayList<>(testResults);
   }
 
-  private void initialize() {
+  public void initialize() {
 
     setMaxAllowedHoursToRun(System.getenv("MaxRunningTimeInHours"));
 
     pReport = new PolicyReport(jUnitFormatReportPath);
-
+    pol = new Policy();
 
   }
 

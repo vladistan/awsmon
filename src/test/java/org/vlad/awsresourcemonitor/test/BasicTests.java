@@ -371,15 +371,15 @@ public class BasicTests {
     String reportPath = testFolder.getRoot().toPath().toString();
     mon.setjUnitFormatReportPath(reportPath);
 
-    mon.addResult(AWSResourceMonitor.getFailingTestCase("myOrg-app1 Master", "RunningTime",
+    mon.addResult(PolicyReport.getFailingTestCase("myOrg-app1 Master", "RunningTime",
       "Does not have required tag 'Lifecycle'"));
 
-    mon.addResult(AWSResourceMonitor.getPassingTestCase("myOrg-app1Services SSO Server", "RunningTime"));
+    mon.addResult(PolicyReport.getPassingTestCase("myOrg-app1Services SSO Server", "RunningTime"));
 
 
-    mon.addResult(AWSResourceMonitor.getFailingTestCase("myOrg-app2Services SSO Server", "RunningTime",
+    mon.addResult(PolicyReport.getFailingTestCase("myOrg-app2Services SSO Server", "RunningTime",
       String.format(message, "myOrg-app2Services SSO Server")));
-    mon.addResult(AWSResourceMonitor.getFailingTestCase("myOrg-app2Services WebApp", "RunningTime",
+    mon.addResult(PolicyReport.getFailingTestCase("myOrg-app2Services WebApp", "RunningTime",
       String.format(message, "myOrg-app2Services WebApp")));
 
     PolicyReport pReport = new PolicyReport(reportPath);
@@ -426,6 +426,7 @@ public class BasicTests {
     instData.setRegion("us-west-9");
     instList.add(instData);
 
+    mon.initialize();
     mon.assessInstances(instList);
     List<Testcase> res = mon.getTestResults();
 

@@ -1,8 +1,11 @@
 /**
+ *
  * Copyright 2017 Vlad Korolev
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  **/
+
 
 package org.vlad.awsresourcemonitor;
 
@@ -44,7 +47,6 @@ public class Ec2InstanceCollection {
   /**
    * Get all instances in US_EAST_1 and US_WEST_1.
    *
-   * @return list of instance proxy objects
    */
   public void getAllInstances() {
     // Find all running EC2 instances that match the regular expression

@@ -1,1 +1,3 @@
-docker build -t local/pigbuilder .
+
+
+docker build -t local/aws_mon_builder .

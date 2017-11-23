@@ -14,5 +14,5 @@ fi
 echo Using UID ${USE_UID}
 
 echo Building aws_mon_robot
-docker run -u ${USE_UID} -v $(pwd):/app --entrypoint /bin/bash  local/pigbuilder /app/ci/build-and-test.sh
+docker run -u ${USE_UID} -v $(pwd):/app --entrypoint /bin/bash  local/aws_mon_builder /app/ci/build-and-test.sh
 

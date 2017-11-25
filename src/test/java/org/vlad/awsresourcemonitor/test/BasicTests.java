@@ -436,7 +436,7 @@ public class BasicTests {
 
     assertThat(case1.getFailure()).hasSize(1);
 
-    assertThat(case1.getFailure().get(0).getMessage()).isEqualTo("Found instance outside of US_EAST1 region");
+    assertThat(case1.getFailure().get(0).getMessage()).isEqualTo("Found instance outside of us-east-1 region");
 
 
   }

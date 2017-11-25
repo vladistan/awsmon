@@ -277,8 +277,8 @@ public class AWSResourceMonitor {
 
     setMaxAllowedHoursToRun(System.getenv("MaxRunningTimeInHours"));
 
+    pol = Policy.getInstance();
     pReport = new PolicyReport(jUnitFormatReportPath);
-    pol = new Policy();
 
   }
 

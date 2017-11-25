@@ -13,8 +13,26 @@ package org.vlad.awsresourcemonitor;
  */
 public class Policy {
 
+  private static Policy instance;
 
-  private String allowedRegion =  "us-east-1";
+  private String allowedRegion;
+
+
+  private Policy() {
+
+    allowedRegion = "us-east-1";
+  }
+
+  public static Policy getInstance() {
+    return instance;
+  }
+
+  static {
+
+    instance = new Policy();
+
+  }
+
 
   public String getAllowedRegion() {
     return allowedRegion;

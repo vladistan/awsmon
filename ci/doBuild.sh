@@ -14,6 +14,7 @@ fi
 echo Using UID ${USE_UID}
 
 mkdir -p \?
+mkdir -p \?\.m2
 mkdir -p .m2
 mkdir -p .sonar
 mkdir -p .gradle

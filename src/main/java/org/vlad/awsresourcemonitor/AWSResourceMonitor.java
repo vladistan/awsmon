@@ -210,8 +210,9 @@ public class AWSResourceMonitor {
         failure |= checkTag(instName, "ChargeLine", objData.chargeLine);
 
 
-        if (!objData.getRegion().equals("us-east-1")) {
-          String errMsg = "Found instance outside of US_EAST1 region";
+        String allowedRegion = pol.getAllowedRegion();
+        if (!objData.getRegion().equals(allowedRegion)) {
+          String errMsg = "Found instance outside of " +  allowedRegion + " region";
           addResult(PolicyReport.getFailingTestCase(instName, "WrongRegion", errMsg));
           failure |= true;
         }

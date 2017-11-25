@@ -14,6 +14,9 @@ package org.vlad.awsresourcemonitor;
 public class Policy {
 
 
+  private String allowedRegion =  "us-east-1";;
 
-
+  public String getAllowedRegion() {
+    return allowedRegion;
+  }
 }

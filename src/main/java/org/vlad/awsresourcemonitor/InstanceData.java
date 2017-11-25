@@ -89,7 +89,7 @@ public class InstanceData {
     AllowedChargeLineValues.add("InternalQA");
     AllowedChargeLineValues.add("Cust1");
 
-    environment = new ObjectAttribute(Policy.getInstance().getEnvironments());
+    environment = new ObjectAttribute("Environment", Policy.getInstance().getEnvironments());
 
 
     AllowedTag.add("aws:autoscaling:groupName");

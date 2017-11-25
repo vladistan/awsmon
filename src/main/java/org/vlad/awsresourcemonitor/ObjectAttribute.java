@@ -11,7 +11,6 @@ package org.vlad.awsresourcemonitor;
 
 import org.vlad.awsresourcemonitor.exception.BadObjectAttributeValue;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -20,18 +19,17 @@ import java.util.Set;
 public class ObjectAttribute {
   private String value;
   private Set<String> allowedValues;
+  private final String name;
 
-  public ObjectAttribute() {
-    this.allowedValues = new HashSet<>();
-  }
 
-  public ObjectAttribute(Set<String> allowedValues) {
+  public ObjectAttribute(String name, Set<String> allowedValues) {
     this.allowedValues = allowedValues;
+    this.name = name;
   }
 
   public void setValue(String value) throws BadObjectAttributeValue {
     if (!allowedValues.contains(value)) {
-      throw new BadObjectAttributeValue("Invalid Environment tag value '" + value + "'");
+      throw new BadObjectAttributeValue("Invalid " + name + " tag value '" + value + "'");
     }
 
     this.value = value;

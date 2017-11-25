@@ -13,6 +13,11 @@ fi
 
 echo Using UID ${USE_UID}
 
+mkdir -p \?
+mkdir -p .m2
+mkdir -p .sonar
+mkdir -p .gradle
+
 echo Building aws_mon_robot
 docker run -u ${UID:-1001}:${UID:-1001} \
        -v $(pwd):/app \

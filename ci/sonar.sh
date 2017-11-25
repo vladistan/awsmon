@@ -14,14 +14,13 @@ fi
 echo Using UID ${USE_UID}
 
 
-docker run -u go:go \
-    -v /Users/vlad/Proj/aws_mon_robot:/app \
+docker run -u $USE_UID:$USE_UID \
     -e TZ=America/New_York \
     -e HOME=/app \
-    -v $(pwd)/.m2:/app/?/.m2:rw \
     -v $(pwd):/app \
-    -v $(pwd):/app/.m2 \
-    -v ${HOME}/gradle.properties:/app/gradle.properties \
+    -v ${HOME}/.m2:/app/?/.m2:rw \
+    -v ${HOME}/.m2:/app/.m2 \
+    -v ${HOME}/.gradle:/app/.gradle \
     -w /app \
     --entrypoint /app/gradlew \
     local/aws_mon_builder \

@@ -57,7 +57,7 @@ public class AWSResourceMonitor {
 
 
   public List<Testcase> testResults = new ArrayList<>();
-  public int numFailing = 0;
+  public int numFailing;
   private PolicyReport pReport;
   private Policy pol;
 
@@ -70,7 +70,6 @@ public class AWSResourceMonitor {
   public static void main(String[] args) {
 
     final AWSResourceMonitor mon = new AWSResourceMonitor();
-    final AmazonEC2Client ec2 = new AmazonEC2Client(new DefaultAWSCredentialsProviderChain());
 
     try {
       JCommander jc = new JCommander(mon, args);
@@ -101,7 +100,9 @@ public class AWSResourceMonitor {
 
     }
 
+
     try {
+      final AmazonEC2Client ec2 = new AmazonEC2Client(new DefaultAWSCredentialsProviderChain());
       mon.run(ec2);
     } catch (IOException e) {
       System.out.println(e.getLocalizedMessage());

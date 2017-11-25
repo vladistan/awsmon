@@ -48,14 +48,14 @@ public class Ec2InstanceCollection {
    * Get all instances in US_EAST_1 and US_WEST_1.
    *
    */
-  public void getAllInstances() {
+  public final void getAllInstances() {
     // Find all running EC2 instances that match the regular expression
 
-    Set<String> skipRegions = new HashSet<>();
+    final Set<String> skipRegions = new HashSet<>();
     skipRegions.add("us-gov-west-1");
     skipRegions.add("cn-north-1");
 
-    for (Regions reg : Regions.values()) {
+    for (final Regions reg : Regions.values()) {
       String regName = reg.getName();
       if (skipRegions.contains(regName)) {
         continue;
@@ -72,18 +72,18 @@ public class Ec2InstanceCollection {
    *
    * @param region   region
    */
-  public void collectRegionInstances(Regions region) {
+  public final void collectRegionInstances(Regions region) {
     ec2.setRegion(Region.getRegion(region));
     // Collect a list of running instances
-    DescribeInstancesRequest request = new DescribeInstancesRequest();
-    DescribeInstancesResult result = ec2.describeInstances(request);
-    List<Reservation> reservations = result.getReservations();
+    final DescribeInstancesRequest request = new DescribeInstancesRequest();
+    final DescribeInstancesResult result = ec2.describeInstances(request);
+    final List<Reservation> reservations = result.getReservations();
 
 
     // loop through each running resource
     for (Reservation reservation : reservations) {
       for (Instance instance : reservation.getInstances()) {
-        InstanceData data = new InstanceData(instance);
+        final InstanceData data = new InstanceData(instance);
         data.setRegion(region.getName());
         objList.add(data);
       }

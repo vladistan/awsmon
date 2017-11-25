@@ -22,20 +22,24 @@ public class ObjectAttribute {
   private Set<String> allowedValues;
 
   public ObjectAttribute() {
-    allowedValues = new HashSet<>();
+    this.allowedValues = new HashSet<>();
+  }
+
+  public ObjectAttribute(Set<String> allowedValues) {
+    this.allowedValues = allowedValues;
   }
 
   public void setValue(String value) throws BadObjectAttributeValue {
-    if(!allowedValues.contains(value)) {
+    if (!allowedValues.contains(value)) {
       throw new BadObjectAttributeValue("Invalid Environment tag value '" + value + "'");
     }
 
     this.value = value;
 
-
   }
 
-  public void add_allowed_value(String value) {
-    allowedValues.add(value);
+  public String getValue() {
+    return value;
   }
+
 }

@@ -8,19 +8,34 @@
 
 package org.vlad.awsresourcemonitor;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Contains AWS resource policy.
  */
-public class Policy {
+public final class Policy {
 
   private static Policy instance;
 
-  private String allowedRegion;
+  private final String allowedRegion;
+  private Set<String> environments;
 
 
   private Policy() {
 
     allowedRegion = "us-east-1";
+    environments = new HashSet<>();
+
+    environments.add("Common");
+    environments.add("Admin");
+    environments.add("Iso");
+    environments.add("Dev");
+    environments.add("Test");
+    environments.add("Union");
+    environments.add("Staging");
+    environments.add("Prod");
+
   }
 
   public static Policy getInstance() {
@@ -36,5 +51,9 @@ public class Policy {
 
   public String getAllowedRegion() {
     return allowedRegion;
+  }
+
+  public Set<String> getEnvironments() {
+    return environments;
   }
 }

@@ -89,16 +89,8 @@ public class InstanceData {
     AllowedChargeLineValues.add("InternalQA");
     AllowedChargeLineValues.add("Cust1");
 
-    environment = new ObjectAttribute();
+    environment = new ObjectAttribute(Policy.getInstance().getEnvironments());
 
-    environment.add_allowed_value("Common");
-    environment.add_allowed_value("Admin");
-    environment.add_allowed_value("Iso");
-    environment.add_allowed_value("Dev");
-    environment.add_allowed_value("Test");
-    environment.add_allowed_value("Union");
-    environment.add_allowed_value("Staging");
-    environment.add_allowed_value("Prod");
 
     AllowedTag.add("aws:autoscaling:groupName");
     AllowedTag.add("aws:cloudformation:logical-id");

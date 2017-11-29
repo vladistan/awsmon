@@ -1,0 +1,13 @@
+/build
+dev-infra-split-aws.iml
+/.idea/
+.m2
+.gradle
+src-gen
+schema
+/aws_mon_robot.iml
+/x
+/rep
+/.sonar
+cruise-output/
+autorevision.prop

@@ -1,0 +1,94 @@
+/**
+ * Configuration & Customization
+ */
+buildscript {
+
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+    jcenter()
+  }
+
+  dependencies {
+    classpath "net.saliman:gradle-cobertura-plugin:2.5.1"
+    classpath 'com.github.jacobono:gradle-jaxb-plugin:1.3.6'
+  }
+
+}
+
+plugins {
+  id "org.sonarqube" version "2.6"
+}
+
+
+apply from: 'common.gradle'
+
+
+apply plugin: 'application'
+apply plugin: 'com.github.jacobono.jaxb'
+
+dependencies {
+  testCompile 'junit:junit:4.+'
+  testCompile 'org.mockito:mockito-core:1.9.5'
+  testCompile 'org.assertj:assertj-core:2.2.0'
+
+  testRuntime "org.slf4j:slf4j-log4j12:1.7.5"
+  testRuntime "log4j:log4j:1.2.7"
+
+  compile 'com.amazonaws:aws-java-sdk:1.9.8'
+  compile 'commons-io:commons-io:2.4'
+  compile 'joda-time:joda-time:2.9'
+  compile 'com.beust:jcommander:1.48'
+  compile 'org.yaml:snakeyaml:1.19'
+
+  jaxb 'com.sun.xml.bind:jaxb-xjc:2.2.7-b41'
+  jaxb 'com.sun.xml.bind:jaxb-impl:2.2.7-b41'
+  jaxb 'javax.xml.bind:jaxb-api:2.2.7'
+}
+
+
+configurations.all {
+     exclude group: 'ch.qos.logback', module: 'logback-classic'
+}
+
+cobertura {
+  coverageExcludes = ['.*com.jaxb.*']
+}
+
+sonarqube {
+   properties {
+       property "sonar.exclusions",  "src-gen/**,**/autorevision.java"
+   }
+}
+
+
+tasks.withType(Checkstyle) {
+  exclude '**/com/jaxb/**'
+  exclude '**/org/vlad/internal/*/test/**'
+}
+
+tasks.withType(Javadoc) {
+  exclude '**/com/jaxb/**'
+  exclude '**/org/vlad/**/AWSResourceMonitor.java'
+  exclude '**/org/vlad/internal/*/test/**'
+}
+
+jaxb {
+  xsdDir = "src/main/resources/"
+  xjc {
+    generatePackage = 'com.jaxb.junit'
+    destinationDir = 'src-gen'
+  }
+}
+
+mainClassName = "org.vlad.awsresourcemonitor.AWSResourceMonitor"
+
+compileJava.dependsOn xjc
+
+sourceSets {
+  main {
+    java { srcDirs = ['src/main/java', 'src-gen'] }
+  }
+}
+

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<testsuites>
+    <testsuite name="AwsResources" tests="6" failures="5">
+        <testcase name="InvalidTagValue" classname="myOrg-app1 Master">
+            <failure message="Tag Errors Detected : [Invalid Lifecycle tag value 'Bob'] "/>
+        </testcase>
+        <testcase name="MissingTag" classname="myOrg-app1 Master">
+            <failure message="Does not have required tag 'Lifecycle'"/>
+        </testcase>
+        <testcase name="RunningTime" classname="myOrg-app1Services SSO Server"/>
+        <testcase name="RunningTime" classname="myOrg-app2Services SSO Server">
+            <failure message="has been running longer than the allowable time."/>
+        </testcase>
+        <testcase name="InvalidTagValue" classname="myOrg-app2Services SSO Server">
+            <failure message="Tag Errors Detected : [Invalid Lifecycle tag value 'Bob'] "/>
+        </testcase>
+        <testcase name="MissingTag" classname="myOrg-app2Services SSO Server">
+            <failure message="Does not have required tag 'Lifecycle'"/>
+        </testcase>
+    </testsuite>
+</testsuites>

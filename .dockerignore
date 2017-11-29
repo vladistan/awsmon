@@ -1,0 +1,7 @@
+.gradle
+.sonar
+src
+build
+.git
+.idea
+!build/distributions/*

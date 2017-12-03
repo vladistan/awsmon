@@ -150,13 +150,15 @@ public class BasicTests {
   }
 
   @Test
-  public void shouldNotifyAboutMissingTagsInTheReport() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException, URISyntaxException, XmlException {
+  public void shouldNotifyAboutMissingTagsInTheReport() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException, URISyntaxException, XmlException, ParseException {
     AWSResourceMonitor mon = new AWSResourceMonitor();
 
     String reportPath = testFolder.getRoot().toPath().toString();
     mon.setjUnitFormatReportPath(reportPath);
     mon.setNamePattern("my.*");
     mon.setMaxAllowedHoursToRun("2");
+    mon.loadPolicy(policyFile);
+
 
     AmazonEC2 ec2 = mock(AmazonEC2.class);
     DescribeInstancesResult result = mock(DescribeInstancesResult.class);
@@ -290,6 +292,63 @@ public class BasicTests {
     instData = list.get(1);
     assertThat(instData.getRegion()).isEqualTo("us-west-1");
 
+  }
+
+
+  @Test
+  public void shouldHandlePoliciesWithNoOwnerTag() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException, URISyntaxException, XmlException, ParseException {
+    AWSResourceMonitor mon = new AWSResourceMonitor();
+
+    String reportPath = testFolder.getRoot().toPath().toString();
+    mon.setjUnitFormatReportPath(reportPath);
+    mon.setNamePattern("my.*");
+    mon.setMaxAllowedHoursToRun("2");
+    mon.loadPolicy(altPolicyFile);
+
+
+    AmazonEC2 ec2 = mock(AmazonEC2.class);
+    DescribeInstancesResult result = mock(DescribeInstancesResult.class);
+
+    List<Reservation> reservations = new ArrayList<Reservation>();
+    when(result.getReservations())
+      .thenReturn(reservations)
+      .thenReturn(new ArrayList<Reservation>());
+    when(ec2.describeInstances((DescribeInstancesRequest) notNull())).thenReturn(result);
+
+    Reservation res1 = mock(Reservation.class);
+    reservations.add(res1);
+
+    List<Instance> list1 = new ArrayList<Instance>();
+    when(res1.getInstances()).thenReturn(list1);
+
+
+    Instance inst = TestUtil.getMockInstance("running", "myOrg-app1 Master");
+    list1.add(inst);
+    TestUtil.addInstanceTag(inst, "Service", "VPN");
+    TestUtil.addInstanceTag(inst, "Lifecycle", "Bob");
+    TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
+    TestUtil.addInstanceTag(inst, "Env", "common");
+    TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
+
+    list1.add(TestUtil.getMockInstance("terminated", "myOrg-app1Services SSO Server", 1));
+
+    // Should give error for instances that already have other violations
+    inst = TestUtil.getMockInstance("running", "myOrg-app2Services SSO Server", 4);
+    list1.add(inst);
+    TestUtil.addInstanceTag(inst, "Lifecycle", "Bob");
+    TestUtil.addInstanceTag(inst, "ChargeLine", "InternalDev");
+    TestUtil.addInstanceTag(inst, "Service", "VPN");
+    TestUtil.addInstanceTag(inst, "Env", "prod");
+    TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
+
+
+    mon.run(ec2);
+
+    File basicSamplereport = TestUtil.getTestResource("testReportInvalidLifeCycleTag.xml");
+    PolicyReport pReport = new PolicyReport(reportPath);
+
+    File tmpFileName = pReport.getJunitReportFile();
+    assertThat(tmpFileName).hasSameContentAs(basicSamplereport);
   }
 
 

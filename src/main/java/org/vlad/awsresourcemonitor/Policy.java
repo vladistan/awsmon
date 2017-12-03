@@ -25,6 +25,7 @@ import java.util.Set;
 public final class Policy {
 
   private static Policy instance;
+  private String envTagName;
 
   private String allowedRegion;
   private Set<String> environments;
@@ -53,6 +54,8 @@ public final class Policy {
     allowedTags.add("Name");
     allowedTags.add("Lifecycle");
 
+    envTagName = "Environment";
+
   }
 
   public static Policy getInstance() {
@@ -70,13 +73,17 @@ public final class Policy {
 
     HashMap<String, List<String>> map = yaml.load(new FileReader(yamlFile));
 
+    instance.owners = null;
+
     instance.allowedTags.addAll(map.get("AllowedTags"));
     instance.allowedRegion = map.get("Region").get(0);
 
     instance.projects     = loadTag(map, "Project");
     instance.environments = loadTag(map, "Environment");
     instance.chargeLines  = loadTag(map, "ChargeLine");
-    instance.owners       = loadTag(map, "Owner");
+    if ( map.containsKey("Owner")) {
+      instance.owners = loadTag(map, "Owner");
+    }
     instance.services     = loadTag(map, "Service");
 
 
@@ -87,6 +94,7 @@ public final class Policy {
     if ((!map.containsKey(name)) && name.equals("Environment"))
     {
       name = "Env";
+      instance.envTagName = "Env";
     }
 
     List<String> valueList = map.get(name);

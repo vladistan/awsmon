@@ -107,6 +107,8 @@ public class InstanceData {
           chargeLine.setValue(tagValue);
         } else if ("Environment".equals(tagKey)) {
           environment.setValue(tagValue);
+        } else if ("Env".equals(tagKey)) {
+          environment.setValue(tagValue);
         }
       } catch (BadObjectAttributeValue | BadObjectAttributeKey badAttr) {
         tagValueErrors.add(badAttr.getMessage());

@@ -182,6 +182,7 @@ public class AWSResourceMonitor {
 
     for (InstanceData objData : instList) {
 
+      Policy pol = Policy.getInstance();
 
       final String instName = objData.name;
 
@@ -212,7 +213,9 @@ public class AWSResourceMonitor {
         failure |= checkTag(instName, "Lifecycle", objData.lifecycle.getValue());
         failure |= checkTag(instName, "Project", objData.project.getValue());
         failure |= checkTag(instName, "Service", objData.service.getValue());
-        failure |= checkTag(instName, "Owner", objData.owner.getValue());
+        if ( pol.getOwners() != null ) {
+          failure |= checkTag(instName, "Owner", objData.owner.getValue());
+        }
         failure |= checkTag(instName, "ChargeLine", objData.chargeLine.getValue());
         failure |= checkTag(instName, "Environment", objData.environment.getValue());
 

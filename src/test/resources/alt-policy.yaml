@@ -21,12 +21,6 @@ ChargeLine:
   - InternalQA
   - Cust1
 
-Owner:
-  - Vlad
-  - Greg
-  - Akshay
-
-
 AllowedTags:
   - Puppet
 

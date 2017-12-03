@@ -60,7 +60,7 @@ public class InstanceData {
     chargeLine = new ObjectAttribute("ChargeLine", policy.getChargeLines());
     environment = new ObjectAttribute("Environment", policy.getEnvironments());
     owner = new ObjectAttribute("Owner", policy.getOwners());
-    lifecycle = new ObjectAttribute("Lifecycle", policy.getLifecycles());
+    lifecycle = new ObjectAttribute("Lifecycle", policy.getLifecycle());
     project = new ObjectAttribute("Project", policy.getProjects());
     service = new ObjectAttribute("Service", policy.getServices());
 

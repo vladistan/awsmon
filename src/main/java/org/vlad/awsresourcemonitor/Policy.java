@@ -31,7 +31,7 @@ public final class Policy {
   private Set<String> allowedTags;
   private Set<String> chargeLines;
   private Set<String> owners;
-  private Set<String> lifecycles;
+  private Set<String> lifecycle;
   private Set<String> projects;
   private Set<String> services;
 
@@ -39,12 +39,12 @@ public final class Policy {
   private Policy() {
 
     allowedTags = new HashSet<>();
-    lifecycles  = new HashSet<>();
+    lifecycle = new HashSet<>();
 
-    lifecycles.add("Permanent");
-    lifecycles.add("OnDemand");
-    lifecycles.add("POC");
-    lifecycles.add("Spot");
+    lifecycle.add("Permanent");
+    lifecycle.add("OnDemand");
+    lifecycle.add("POC");
+    lifecycle.add("Spot");
 
     allowedTags.add("aws:autoscaling:groupName");
     allowedTags.add("aws:cloudformation:logical-id");
@@ -136,8 +136,8 @@ public final class Policy {
     return projects;
   }
 
-  public Set<String> getLifecycles() {
-    return lifecycles;
+  public Set<String> getLifecycle() {
+    return lifecycle;
   }
 
 }

@@ -58,7 +58,7 @@ public class TestPolicyParsing {
     assertThat(pol.getProjects()).contains("Zebra", "Build");
     assertThat(pol.getEnvironments()).contains("Common", "Prod");
     assertThat(pol.getChargeLines()).contains("InternalDev", "InternalQA");
-    assertThat(pol.getLifecycles()).contains("Permanent", "Spot");
+    assertThat(pol.getLifecycle()).contains("Permanent", "Spot");
     assertThat(pol.getOwners()).contains("Vlad", "Greg");
     assertThat(pol.getServices()).contains("VPN", "MicroService");
 

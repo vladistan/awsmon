@@ -84,6 +84,11 @@ public final class Policy {
 
   private static Set<String> loadTag(HashMap<String, List<String>> map, String name) throws ParseException {
 
+    if ((!map.containsKey(name)) && name.equals("Environment"))
+    {
+      name = "Env";
+    }
+
     List<String> valueList = map.get(name);
 
     if (valueList == null) {

@@ -1,0 +1,39 @@
+---
+
+Region:
+  - us-east-1
+
+Env:
+  - common
+  - dev
+  - stage
+  - prod
+
+Project:
+  - Build
+  - Athena
+  - Zebra
+  - Dev-Infra
+  - App1 (v1.0)
+
+ChargeLine:
+  - InternalDev
+  - InternalQA
+  - Cust1
+
+Owner:
+  - Vlad
+  - Greg
+  - Akshay
+
+
+AllowedTags:
+  - Puppet
+
+Service:
+  - VPN
+  - Scheduler
+  - Build
+  - Analytics
+  - Authentication
+  - MicroService

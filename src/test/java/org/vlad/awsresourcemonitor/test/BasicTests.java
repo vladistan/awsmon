@@ -31,6 +31,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.ParseException;
@@ -46,6 +47,7 @@ import static org.mockito.Mockito.*;
 public class BasicTests {
 
   private String policyFile;
+  private String altPolicyFile;
 
   @Rule
   public TemporaryFolder testFolder = new TemporaryFolder();
@@ -53,6 +55,7 @@ public class BasicTests {
   @Before
   public void setUp() throws URISyntaxException {
       policyFile = TestUtil.getTestResource("policy.yaml").getPath();
+      altPolicyFile = TestUtil.getTestResource("alt-policy.yaml").getPath();
   }
 
   @Test
@@ -237,6 +240,17 @@ public class BasicTests {
   }
 
   @Test
+  public void allowAlternativeEnvInPolicyFile() throws FileNotFoundException, ParseException {
+
+    AWSResourceMonitor mon = new AWSResourceMonitor();
+    mon.setNamePattern("my.*");
+    mon.setMaxAllowedHoursToRun("2");
+    mon.loadPolicy(altPolicyFile);
+
+
+  }
+
+  @Test
   public void instanceDataMustHaveRegionFieldFilledWhenMultipleRegionsArePresent()
     throws SAXException, TransformerException,
            IOException, ParserConfigurationException,
@@ -281,13 +295,15 @@ public class BasicTests {
 
 
   @Test
-  public void shouldNotifyAboutIncorectValueForLifecycleTag() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException, URISyntaxException, XmlException {
+  public void shouldNotifyAboutIncorectValueForLifecycleTag() throws SAXException, TransformerException, IOException, ParserConfigurationException, JAXBException, URISyntaxException, XmlException, ParseException {
     AWSResourceMonitor mon = new AWSResourceMonitor();
 
     String reportPath = testFolder.getRoot().toPath().toString();
     mon.setjUnitFormatReportPath(reportPath);
     mon.setNamePattern("my.*");
     mon.setMaxAllowedHoursToRun("2");
+    mon.loadPolicy(policyFile);
+
 
     AmazonEC2 ec2 = mock(AmazonEC2.class);
     DescribeInstancesResult result = mock(DescribeInstancesResult.class);

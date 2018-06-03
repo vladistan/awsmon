@@ -196,11 +196,11 @@ public class AWSResourceMonitor {
 
       if (objData.isRunning()) {
 
-        Date launchTime = objData.getLaunchTime();
+        final Date launchTime = objData.getLaunchTime();
 
         if (isSubjectToMaxRuntime(objData) && beenRunningTooLong(launchTime, new Date())) {
           // been running too long
-          String errMsg = "has been running longer than the allowable time.";
+          final String errMsg = "has been running longer than the allowable time.";
           addResult(PolicyReport.getFailingTestCase(instName, "RunningTime", errMsg));
           failure |= true;
         }

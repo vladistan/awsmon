@@ -27,7 +27,7 @@ public final class Policy {
   private static Policy instance;
   private String envTagName;
 
-  private String allowedRegion;
+  private Set<String> allowedRegions;
   private Set<String> environments;
   private Set<String> allowedTags;
   private Set<String> chargeLines;
@@ -41,6 +41,7 @@ public final class Policy {
 
     allowedTags = new HashSet<>();
     lifecycle = new HashSet<>();
+    allowedRegions = new HashSet<>();
 
     lifecycle.add("Permanent");
     lifecycle.add("OnDemand");
@@ -76,7 +77,8 @@ public final class Policy {
     instance.owners = null;
 
     instance.allowedTags.addAll(map.get("AllowedTags"));
-    instance.allowedRegion = map.get("Region").get(0);
+    List<String> regions = map.get("Region");
+    instance.allowedRegions.addAll(regions);
 
     instance.projects     = loadTag(map, "Project");
     instance.environments = loadTag(map, "Environment");
@@ -116,8 +118,8 @@ public final class Policy {
 
 
 
-  public String getAllowedRegion() {
-    return allowedRegion;
+  public Set<String> getAllowedRegion() {
+    return allowedRegions;
   }
 
   public Set<String> getEnvironments() {

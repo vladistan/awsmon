@@ -52,7 +52,8 @@ public class TestPolicyParsing {
     Policy.load( yamlFile );
     Policy pol = Policy.getInstance();
 
-    assertThat(pol.getAllowedRegion()).isEqualTo("us-east-1");
+    assertThat(pol.getAllowedRegion()).contains("us-east-1");
+    assertThat(pol.getAllowedRegion()).contains("us-west-2");
 
     assertThat(pol.getAllowedTags()).contains("Environment", "Puppet");
     assertThat(pol.getProjects()).contains("Zebra", "Build");

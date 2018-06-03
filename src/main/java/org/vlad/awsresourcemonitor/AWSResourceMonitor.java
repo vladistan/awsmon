@@ -27,6 +27,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -220,9 +221,9 @@ public class AWSResourceMonitor {
         failure |= checkTag(instName, "Environment", objData.environment.getValue());
 
 
-        final String allowedRegion = pol.getAllowedRegion();
-        if (!objData.getRegion().equals(allowedRegion)) {
-          final String errMsg = "Found instance outside of " +  allowedRegion + " region";
+        final Set<String> allowedRegions = pol.getAllowedRegion();
+        if (!allowedRegions.contains(objData.getRegion())) {
+          final String errMsg = "Found instance outside of " +  allowedRegions.toString() + " region";
           addResult(PolicyReport.getFailingTestCase(instName, "WrongRegion", errMsg));
           failure |= true;
         }

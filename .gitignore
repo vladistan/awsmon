@@ -11,3 +11,5 @@ schema
 /.sonar
 cruise-output/
 autorevision.prop
+/classes
+/awsmon.iml

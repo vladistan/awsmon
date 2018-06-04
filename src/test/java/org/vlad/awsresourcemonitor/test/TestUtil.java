@@ -82,4 +82,14 @@ public class TestUtil {
   }
 
 
+  public static Instance getMockRDS(String stateName, String instanceName, int runningTime) {
+
+    Instance inst = getMockInstance(stateName, instanceName);
+
+    DateTime launchTime = new DateTime().minus(new Period(runningTime, 0, 0, 0));
+
+    when(inst.getLaunchTime()).thenReturn(launchTime.toDate());
+
+    return inst;
+  }
 }

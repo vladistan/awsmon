@@ -11,6 +11,10 @@ package org.vlad.awsresourcemonitor;
 
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Tag;
+import com.amazonaws.services.rds.AmazonRDS;
+import com.amazonaws.services.rds.model.DBInstance;
+import com.amazonaws.services.rds.model.ListTagsForResourceRequest;
+import com.amazonaws.services.rds.model.ListTagsForResourceResult;
 import org.vlad.awsresourcemonitor.exception.BadObjectAttributeKey;
 import org.vlad.awsresourcemonitor.exception.BadObjectAttributeValue;
 
@@ -24,6 +28,7 @@ import java.util.Set;
  */
 public class InstanceData {
 
+  private AmazonRDS rds;
   /** Is instance currently running. */
   public boolean running;
   /** Instance name. */
@@ -46,7 +51,7 @@ public class InstanceData {
   private List<String> tagValueErrors = new ArrayList<>();
   private Date launchTime;
 
-  final private Set<String> allowedTags;
+  private Set<String> allowedTags;
 
   private String region;
 
@@ -77,6 +82,88 @@ public class InstanceData {
       name = inst.getInstanceId();
       tagValueErrors.add("Instance " + name + ": 'Name' tag is missing or empty");
     }
+
+  }
+
+  public InstanceData(DBInstance inst) {
+
+    rds = AWSInfo.getRds();
+
+
+    Policy policy = Policy.getInstance();
+    chargeLine = new ObjectAttribute("ChargeLine", policy.getChargeLines());
+    environment = new ObjectAttribute("Environment", policy.getEnvironments());
+    owner = new ObjectAttribute("Owner", policy.getOwners());
+    lifecycle = new ObjectAttribute("Lifecycle", policy.getLifecycle());
+    project = new ObjectAttribute("Project", policy.getProjects());
+    service = new ObjectAttribute("Service", policy.getServices());
+
+    allowedTags = policy.getAllowedTags();
+
+
+
+    final String stateName = inst.getDBInstanceStatus();
+    running = "available".equals(stateName);
+    launchTime = inst.getInstanceCreateTime();
+
+    processTags(inst);
+
+    if ("".equals(name) || name == null) {
+      name = inst.getDBInstanceIdentifier();
+      tagValueErrors.add("Instance " + name + ": 'Name' tag is missing or empty");
+    }
+  }
+
+  private void processTags(DBInstance inst) {
+
+
+    String arn = getInstanceARN(inst);
+    ListTagsForResourceRequest tagReq = new ListTagsForResourceRequest().withResourceName(arn);
+    ListTagsForResourceResult tagRes = rds.listTagsForResource(tagReq);
+
+    final List<com.amazonaws.services.rds.model.Tag> tags = tagRes.getTagList();
+    for (final com.amazonaws.services.rds.model.Tag tag : tags) {
+
+      final String tagKey = tag.getKey();
+      final String tagValue = tag.getValue();
+
+      try {
+
+        checkAllowedTag(tagKey);
+
+        if ("Name".equals(tagKey)) {
+          this.name = tagValue;
+        } else if ("Lifecycle".equals(tagKey)) {
+          lifecycle.setValue(tagValue);
+        } else if ("Project".equals(tagKey)) {
+          project.setValue(tagValue);
+        } else if ("Service".equals(tagKey)) {
+          service.setValue(tagValue);
+        } else if ("Owner".equals(tagKey)) {
+          owner.setValue(tagValue);
+        } else if ("ChargeLine".equals(tagKey)) {
+          chargeLine.setValue(tagValue);
+        } else if ("Environment".equals(tagKey)) {
+          environment.setValue(tagValue);
+        } else if ("Env".equals(tagKey)) {
+          environment.setValue(tagValue);
+        }
+      } catch (BadObjectAttributeValue | BadObjectAttributeKey badAttr) {
+        tagValueErrors.add(badAttr.getMessage());
+      }
+
+    }
+
+  }
+
+  private String getInstanceARN(DBInstance inst) {
+
+     String azone = inst.getAvailabilityZone();
+     String region = azone.substring(0, azone.length() - 1);
+
+     String arn = "arn:aws:rds:" + region + ":" + AWSInfo.getAcc() + ":db:" + inst.getDBInstanceIdentifier();
+
+     return arn;
 
   }
 

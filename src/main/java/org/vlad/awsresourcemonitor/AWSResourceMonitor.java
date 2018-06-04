@@ -12,6 +12,12 @@ package org.vlad.awsresourcemonitor;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.rds.AmazonRDS;
+import com.amazonaws.services.rds.AmazonRDSClient;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClient;
+import com.amazonaws.services.securitytoken.model.GetCallerIdentityRequest;
+import com.amazonaws.services.securitytoken.model.GetCallerIdentityResult;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
@@ -109,9 +115,9 @@ public class AWSResourceMonitor {
 
 
     try {
-      final AmazonEC2Client ec2 = new AmazonEC2Client(new DefaultAWSCredentialsProviderChain());
+
       Policy.load(mon.policyFile);
-      mon.run(ec2);
+      mon.run(AWSInfo.getEc2(), AWSInfo.getRds());
     } catch (ParseException | IOException | XmlException e) {
       System.out.println(e.getLocalizedMessage());
       e.printStackTrace();
@@ -163,10 +169,12 @@ public class AWSResourceMonitor {
    *
    * @param ec2 reference to EC2 API object
    */
-  public void run(AmazonEC2 ec2) throws IOException, XmlException {
+  public void run(AmazonEC2 ec2, AmazonRDS rds) throws IOException, XmlException {
 
     this.initialize();
     List<InstanceData> instList = new Ec2InstanceCollection(ec2).getObjList();
+
+    instList.addAll(new RDSInstanceCollection(rds).getObjList());
 
     this.assessInstances(instList);
     pReport.writeJunitReport(this.numFailing, this.testResults);
@@ -223,7 +231,7 @@ public class AWSResourceMonitor {
 
         final Set<String> allowedRegions = pol.getAllowedRegion();
         if (!allowedRegions.contains(objData.getRegion())) {
-          final String errMsg = "Found instance outside of " +  allowedRegions.toString() + " region";
+          final String errMsg = "Found instance outside of " +  allowedRegions + " region";
           addResult(PolicyReport.getFailingTestCase(instName, "WrongRegion", errMsg));
           failure |= true;
         }

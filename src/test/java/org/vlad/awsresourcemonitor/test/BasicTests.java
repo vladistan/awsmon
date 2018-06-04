@@ -13,6 +13,9 @@ import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Reservation;
+import com.amazonaws.services.rds.AmazonRDS;
+import com.amazonaws.services.rds.model.DescribeDBInstancesRequest;
+import com.amazonaws.services.rds.model.DescribeDBInstancesResult;
 import com.jaxb.junit.Testcase;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -59,7 +62,7 @@ public class BasicTests {
   }
 
   @Test
-  public void shouldGenerateCorrectReportGivenMockedEc2()
+  public void shouldGenerateCorrectReportGivenMockedEc2AndRds()
     throws SAXException, TransformerException,
     IOException, ParserConfigurationException, JAXBException, URISyntaxException,
     XmlException, ParseException {
@@ -73,7 +76,14 @@ public class BasicTests {
     mon.loadPolicy(policyFile);
 
 
+    AmazonRDS rds = mock(AmazonRDS.class);
+    DescribeDBInstancesResult rds_res = mock(DescribeDBInstancesResult.class);
+    when(rds.describeDBInstances((DescribeDBInstancesRequest) anyObject())).thenReturn(rds_res);
+
+
+
     AmazonEC2 ec2 = mock(AmazonEC2.class);
+
     DescribeInstancesResult result = mock(DescribeInstancesResult.class);
 
     List<Reservation> reservations = new ArrayList<Reservation>();
@@ -137,10 +147,10 @@ public class BasicTests {
     TestUtil.addInstanceTag(inst, "VPCStackPrefix", "xx");
     list2.add(inst);
 
-    mon.run(ec2);
+    mon.run(ec2, rds);
 
-    verify(ec2, times(9)).setRegion((Region) anyObject());
-    verify(ec2, times(9)).describeInstances((DescribeInstancesRequest) anyObject());
+    verify(ec2, times(10)).setRegion((Region) anyObject());
+    verify(ec2, times(10)).describeInstances((DescribeInstancesRequest) anyObject());
     verifyNoMoreInteractions(ec2);
 
 
@@ -160,7 +170,15 @@ public class BasicTests {
     mon.loadPolicy(policyFile);
 
 
+    AmazonRDS rds = mock(AmazonRDS.class);
+    DescribeDBInstancesResult rds_res = mock(DescribeDBInstancesResult.class);
+    when(rds.describeDBInstances((DescribeDBInstancesRequest) anyObject())).thenReturn(rds_res);
+
+
     AmazonEC2 ec2 = mock(AmazonEC2.class);
+
+
+
     DescribeInstancesResult result = mock(DescribeInstancesResult.class);
 
     List<Reservation> reservations = new ArrayList<Reservation>();
@@ -195,7 +213,7 @@ public class BasicTests {
     inst = TestUtil.getMockInstance("running", "myOrg-app2Services SSO Server", 4);
     list1.add(inst);
 
-    mon.run(ec2);
+    mon.run(ec2, rds);
 
     File basicSamplereport = TestUtil.getTestResource("testReportTagsMissing.xml");
 
@@ -305,6 +323,10 @@ public class BasicTests {
     mon.setMaxAllowedHoursToRun("2");
     mon.loadPolicy(altPolicyFile);
 
+    AmazonRDS rds = mock(AmazonRDS.class);
+    DescribeDBInstancesResult rds_res = mock(DescribeDBInstancesResult.class);
+    when(rds.describeDBInstances((DescribeDBInstancesRequest) anyObject())).thenReturn(rds_res);
+
 
     AmazonEC2 ec2 = mock(AmazonEC2.class);
     DescribeInstancesResult result = mock(DescribeInstancesResult.class);
@@ -342,7 +364,7 @@ public class BasicTests {
     TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
 
 
-    mon.run(ec2);
+    mon.run(ec2, rds);
 
     File basicSamplereport = TestUtil.getTestResource("testReportInvalidLifeCycleTag.xml");
     PolicyReport pReport = new PolicyReport(reportPath);
@@ -362,6 +384,11 @@ public class BasicTests {
     mon.setNamePattern("my.*");
     mon.setMaxAllowedHoursToRun("2");
     mon.loadPolicy(policyFile);
+
+    AmazonRDS rds = mock(AmazonRDS.class);
+    DescribeDBInstancesResult rds_res = mock(DescribeDBInstancesResult.class);
+    when(rds.describeDBInstances((DescribeDBInstancesRequest) anyObject())).thenReturn(rds_res);
+
 
 
     AmazonEC2 ec2 = mock(AmazonEC2.class);
@@ -402,7 +429,7 @@ public class BasicTests {
     TestUtil.addInstanceTag(inst, "Project", "App1 (v1.0)");
 
 
-    mon.run(ec2);
+    mon.run(ec2, rds);
 
     File basicSamplereport = TestUtil.getTestResource("testReportInvalidLifeCycleTag.xml");
     PolicyReport pReport = new PolicyReport(reportPath);
@@ -418,6 +445,10 @@ public class BasicTests {
     mon.setNamePattern("myOrg.*");
     mon.setMaxAllowedHoursToRun("2");
     mon.setjUnitFormatReportPath(testFolder.getRoot().toPath().toString());
+
+    AmazonRDS rds = mock(AmazonRDS.class);
+    DescribeDBInstancesResult rds_res = mock(DescribeDBInstancesResult.class);
+    when(rds.describeDBInstances((DescribeDBInstancesRequest) anyObject())).thenReturn(rds_res);
 
 
     AmazonEC2 ec2 = mock(AmazonEC2.class);
@@ -456,7 +487,7 @@ public class BasicTests {
 
 
 
-    mon.run(ec2);
+    mon.run(ec2, rds);
 
     List<Testcase> res = mon.getTestResults();
 
